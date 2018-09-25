@@ -162,6 +162,7 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
                                                                 .commit();
                                                     }
                                                 });
+                                                break;
                                             }
                                         }
                                     }
