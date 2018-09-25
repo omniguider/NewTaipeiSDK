@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorPrimary">@color/ntsdk_blue</color>
+    <color name="colorPrimaryDark">@color/ntsdk_blue</color>
+    <color name="colorAccent">@color/ntsdk_blue</color>
+
+    <color name="ntsdk_blue">#0085e4</color>
+    <color name="gray_f3">#f3f3f3</color>
+    <color name="gray_a1">#a1a1a1</color>
+    <color name="gray_d8">#d8d8d8</color>
+    <color name="gray_64">#646464</color>
+
+</resources>

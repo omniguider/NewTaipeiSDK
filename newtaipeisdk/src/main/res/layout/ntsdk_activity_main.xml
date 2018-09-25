@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ntsdk_activity_main_fl"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/gray_f3"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/ntsdk_blue">
+
+            <FrameLayout
+                android:id="@+id/ntsdk_activity_main_fl_back"
+                android:layout_width="@dimen/action_bar_btn_width"
+                android:layout_height="match_parent"
+                android:layout_gravity="left"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center"
+                    android:src="@mipmap/button_back" />
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/ntsdk_activity_main_tv_action_bar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/punch_time_service"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/text_size_action_bar"
+                android:textStyle="bold" />
+
+        </android.support.v7.widget.Toolbar>
+
+        <TextView
+            android:id="@+id/ntsdk_activity_main_tv_punch_time_service"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="40dp"
+            android:background="@mipmap/btn_bg_gray_m"
+            android:gravity="center"
+            android:text="@string/punch_time_service"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_size_action_bar"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/ntsdk_activity_main_tv_query_the_records"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="40dp"
+            android:background="@mipmap/btn_bg_green_m"
+            android:gravity="center"
+            android:text="@string/query_the_records"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_size_action_bar"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</FrameLayout>
