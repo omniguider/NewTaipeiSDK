@@ -38,8 +38,8 @@ public class RecordFragment extends Fragment {
         record_time = new String[mRecordData.length];
         record_status = new String[mRecordData.length];
         for (int i = 0; i < mRecordData.length; i++) {
-            record_time[i] = mRecordData[mRecordData.length-i-1].getTimestamp();
-            record_status[i] = mRecordData[mRecordData.length-i-1].getStatus_name();
+            record_time[i] = mRecordData[mRecordData.length - i - 1].getTimestamp();
+            record_status[i] = mRecordData[mRecordData.length - i - 1].getStatus_name();
         }
     }
 
@@ -95,10 +95,30 @@ public class RecordFragment extends Fragment {
         @Override
         public View getView(int position, View view, ViewGroup viewGroup) {
             view = inflater.inflate(R.layout.record_list_item, null);
+            TextView date_tv = view.findViewById(R.id.record_list_item_date);
             TextView time_tv = view.findViewById(R.id.record_list_item_time);
             TextView status_tv = view.findViewById(R.id.record_list_item_status);
-            time_tv.setText(time[position]);
+            String[] separated = time[position].split("\\s+");
+            date_tv.setText(separated[0]);
+            time_tv.setText(separated[1]);
             status_tv.setText(status[position]);
+            switch (status[position]) {
+                case "上班":
+                case "下班":
+                    status_tv.setTextColor(getResources().getColor(R.color.ntsdk_yellow));
+                    break;
+                case "外出":
+                case "返回":
+                    status_tv.setTextColor(getResources().getColor(R.color.ntsdk_green));
+                    break;
+                case "加班上班":
+                case "加班下班":
+                    status_tv.setTextColor(getResources().getColor(R.color.ntsdk_red));
+                    break;
+                case "測試":
+                    status_tv.setTextColor(getResources().getColor(R.color.ntsdk_purple));
+                    break;
+            }
             return view;
         }
     }

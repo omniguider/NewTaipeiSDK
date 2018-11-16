@@ -11,4 +11,9 @@
     <color name="gray_d8">#d8d8d8</color>
     <color name="gray_64">#646464</color>
 
+    <color name="ntsdk_yellow">#fda600</color>
+    <color name="ntsdk_green">#35cd82</color>
+    <color name="ntsdk_red">#ff4b4b</color>
+    <color name="ntsdk_purple">#b77aff</color>
+
 </resources>

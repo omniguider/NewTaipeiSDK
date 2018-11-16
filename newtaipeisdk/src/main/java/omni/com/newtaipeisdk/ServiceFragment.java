@@ -55,62 +55,66 @@ public class ServiceFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     callRecordApi(ON_DUTY, NewTaipeiSDKActivity.username, NewTaipeiSDKActivity.userid,
-                            NewTaipeiSDKActivity.major, NewTaipeiSDKActivity.minor, getString(R.string.on_duty_time));
+                            NewTaipeiSDKActivity.hwid, getString(R.string.on_duty_time));
                 }
             });
             mView.findViewById(R.id.fragment_service_tv_query_off_duty).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     callRecordApi(OFF_DUTY, NewTaipeiSDKActivity.username, NewTaipeiSDKActivity.userid,
-                            NewTaipeiSDKActivity.major, NewTaipeiSDKActivity.minor, getString(R.string.off_duty_time));
+                            NewTaipeiSDKActivity.hwid, getString(R.string.off_duty_time));
                 }
             });
             mView.findViewById(R.id.fragment_service_tv_go_out).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     callRecordApi(GO_OUT, NewTaipeiSDKActivity.username, NewTaipeiSDKActivity.userid,
-                            NewTaipeiSDKActivity.major, NewTaipeiSDKActivity.minor, getString(R.string.go_out_time));
+                            NewTaipeiSDKActivity.hwid, getString(R.string.go_out_time));
                 }
             });
             mView.findViewById(R.id.fragment_service_tv_come_back).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     callRecordApi(COME_BACK, NewTaipeiSDKActivity.username, NewTaipeiSDKActivity.userid,
-                            NewTaipeiSDKActivity.major, NewTaipeiSDKActivity.minor, getString(R.string.come_back_time));
+                            NewTaipeiSDKActivity.hwid, getString(R.string.come_back_time));
                 }
             });
             mView.findViewById(R.id.fragment_service_tv_on_duty_overtime).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     callRecordApi(ON_DUTY_OT, NewTaipeiSDKActivity.username, NewTaipeiSDKActivity.userid,
-                            NewTaipeiSDKActivity.major, NewTaipeiSDKActivity.minor, getString(R.string.on_duty_overtime_time));
+                            NewTaipeiSDKActivity.hwid, getString(R.string.on_duty_overtime_time));
                 }
             });
             mView.findViewById(R.id.fragment_service_tv_off_duty_overtime).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     callRecordApi(OFF_DUTY_OT, NewTaipeiSDKActivity.username, NewTaipeiSDKActivity.userid,
-                            NewTaipeiSDKActivity.major, NewTaipeiSDKActivity.minor, getString(R.string.off_duty_overtime_time));
+                            NewTaipeiSDKActivity.hwid, getString(R.string.off_duty_overtime_time));
                 }
             });
             mView.findViewById(R.id.fragment_service_tv_for_testing).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     callRecordApi(FOR_TESTING, NewTaipeiSDKActivity.username, NewTaipeiSDKActivity.userid,
-                            NewTaipeiSDKActivity.major, NewTaipeiSDKActivity.minor, getString(R.string.for_testing_time));
+                            NewTaipeiSDKActivity.hwid, getString(R.string.for_testing_time));
                 }
             });
         }
         return mView;
     }
 
-    private void callRecordApi(String status, String username, String idcount, String major, String minor, final String title) {
+    private void callRecordApi(String status, String username, String idcount, String hwid, final String title) {
 
-        NewTaipeiSDKApi.getInstance().setRecord(getActivity(), status, username, idcount, major, minor,
+        NewTaipeiSDKApi.getInstance().setRecord(getActivity(), status, username, idcount, hwid,
                 new NetworkManager.NetworkManagerListener<ClockResponse>() {
                     @Override
                     public void onSucceed(ClockResponse object) {
-                        showSuccessMessage(title, object.getTimestamp());
+                        if (object.getErrorMessage() != null && object.getErrorMessage().equals("ACCESS_DENY")) {
+                            showErrorMessage(getString(R.string.error_dialog_message_text_system_time));
+                        } else {
+                            showSuccessMessage(title, object.getTimestamp());
+                        }
                     }
 
                     @Override

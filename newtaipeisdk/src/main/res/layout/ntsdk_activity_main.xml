@@ -71,4 +71,16 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/ntsdk_activity_main_tv_outside_range"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="24dp"
+        android:gravity="center"
+        android:text="@string/error_dialog_message_text_outside_range"
+        android:textColor="@android:color/holo_red_light"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
 </FrameLayout>

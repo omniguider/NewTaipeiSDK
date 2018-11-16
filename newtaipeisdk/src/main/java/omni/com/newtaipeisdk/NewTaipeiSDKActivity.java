@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.THLight.Omniguider.Lib.OmniguiderData;
 import com.THLight.USBeacon.App.Lib.BatteryPowerData;
 
 import org.altbeacon.beacon.Beacon;
@@ -35,8 +36,11 @@ import org.altbeacon.beacon.Region;
 import org.altbeacon.beacon.service.ArmaRssiFilter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Timer;
 
 import omni.com.newtaipeisdk.model.SendBeaconBatteryResponse;
 import omni.com.newtaipeisdk.network.NetworkManager;
@@ -45,15 +49,20 @@ import omni.com.newtaipeisdk.network.NewTaipeiSDKApi;
 public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconConsumer, BluetoothAdapter.LeScanCallback {
 
     private String TAG = "NewTaipeiSDKActivity";
+    final int PUNCH_TIME_OUT = 5000;
     private BeaconManager mBeaconManager;
     private HandlerThread mBBHandlerThread;
     private Handler mBBHandler;
+    private HandlerThread mTimeoutHandlerThread;
+    private Handler mTimeoutHandler;
     private BluetoothAdapter mBTAdapter = BluetoothAdapter.getDefaultAdapter();
     final List<String> NLPI_BEACON_MAJOR_LIST = new ArrayList<String>() {{
         add("7016");
     }};
+    final List<String> NLPI_BEACON_ID_LIST = new ArrayList<String>();
     public static final String BEACON_LAYOUT = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24";
     private static final float beaconTrigger10 = 10f;
+    private static final int beaconNum = 1620;
     final int MSG_LE_START_SCAN = 1000;
     final int MSG_LE_STOP_SCAN = 1001;
     final int MSG_GET_DATA = 1002;
@@ -63,12 +72,21 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
     public static String uuid;
     public static String major;
     public static String minor;
+    public static String hwid;
     private TextView punch_time_service_TV;
     private TextView query_the_records_TV;
+    private TextView outside_range_TV;
     private String ARG_KEY_USERNAME = "arg_key_username";
     private String ARG_KEY_USERID = "arg_key_userid";
     private String mLastSendBatteryMac;
     private ArrayList<String> mSendBatteryMac;
+    private String mLastSendBatteryId;
+    private ArrayList<String> mSendBatteryId;
+    private int randomNum;
+    private Long currentTime = 0L;
+    private Long lastScanTime = 0L;
+    private boolean checkBluetooth = false;
+    private boolean openBluetoothHint = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,6 +96,10 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
         username = getIntent().getStringExtra(ARG_KEY_USERNAME);
         userid = getIntent().getStringExtra(ARG_KEY_USERID);
 
+        for (int i = 1601; i <= beaconNum; i++) {
+            NLPI_BEACON_ID_LIST.add(String.valueOf(i));
+        }
+
         mBeaconManager = BeaconManager.getInstanceForApplication(this);
         mBeaconManager.setAndroidLScanningDisabled(true);
         mBeaconManager.setRssiFilterImplClass(ArmaRssiFilter.class);
@@ -86,12 +108,72 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
 
         punch_time_service_TV = findViewById(R.id.ntsdk_activity_main_tv_punch_time_service);
         query_the_records_TV = findViewById(R.id.ntsdk_activity_main_tv_query_the_records);
+        outside_range_TV = findViewById(R.id.ntsdk_activity_main_tv_outside_range);
+
+        query_the_records_TV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.ntsdk_activity_main_fl, QueryFragment.newInstance())
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
 
         mSendBatteryMac = new ArrayList<>();
+        mSendBatteryId = new ArrayList<>();
+
+        final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         checkLocationService();
         checkBluetoothOn();
         startScanBeacon();
+
+        mTimeoutHandlerThread = new HandlerThread("HandlerThread");
+        mTimeoutHandlerThread.start();
+        mTimeoutHandler = new Handler(mTimeoutHandlerThread.getLooper());
+        mTimeoutHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                currentTime = Calendar.getInstance().getTime().getTime();
+                if (currentTime - lastScanTime > PUNCH_TIME_OUT) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            punch_time_service_TV.setBackgroundResource(R.mipmap.btn_bg_gray_m);
+                            punch_time_service_TV.setClickable(false);
+                            outside_range_TV.setVisibility(View.VISIBLE);
+                        }
+                    });
+                }
+                if (!bluetoothAdapter.isEnabled()) {
+                    checkBluetooth = false;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            punch_time_service_TV.setBackgroundResource(R.mipmap.btn_bg_gray_m);
+                            punch_time_service_TV.setClickable(false);
+                            outside_range_TV.setVisibility(View.VISIBLE);
+                        }
+                    });
+                    if (!openBluetoothHint) {
+                        Intent enableBluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(enableBluetoothIntent, 77);
+                        openBluetoothHint = true;
+                    }
+                }
+                if (bluetoothAdapter.isEnabled() && !checkBluetooth) {
+                    startScanBeacon();
+                    checkBluetooth = true;
+                    openBluetoothHint = false;
+                }
+                Log.e(TAG, "currentTime" + currentTime);
+                Log.e(TAG, "lastScanTime" + lastScanTime);
+                mTimeoutHandler.postDelayed(this, 1000);
+            }
+        }, 1000);
+
+        randomNum = (int) (Math.random() * 99);
     }
 
     @Override
@@ -113,6 +195,9 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
         if (mBBHandlerThread != null && mBBHandlerThread.isAlive()) {
             mBBHandlerThread.quit();
         }
+        if (mTimeoutHandlerThread != null && mTimeoutHandlerThread.isAlive()) {
+            mTimeoutHandlerThread.quit();
+        }
     }
 
     @Override
@@ -128,51 +213,51 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
 
             @Override
             public void didDetermineStateForRegion(int state, Region region) {
-                try {
-                    mBeaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
-                    mBeaconManager.addRangeNotifier(new RangeNotifier() {
-                        @Override
-                        public void didRangeBeaconsInRegion(final Collection<Beacon> collection, final Region region) {
-                            NewTaipeiSDKActivity.this.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    for (Beacon b : collection) {
-                                        uuid = b.getId1().toString();
-                                        major = b.getId2().toString();
-                                        minor = b.getId3().toString();
-                                        if (b.getDistance() <= getBeaconTrigger()) {
-                                            if (NLPI_BEACON_MAJOR_LIST.contains(major)) {
-                                                Log.v(TAG, "major:" + major + " minor:" + minor);
-                                                punch_time_service_TV.setBackgroundResource(R.mipmap.btn_bg_yellow_m);
-                                                punch_time_service_TV.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View view) {
-                                                        getSupportFragmentManager().beginTransaction()
-                                                                .replace(R.id.ntsdk_activity_main_fl, ServiceFragment.newInstance())
-                                                                .addToBackStack(null)
-                                                                .commit();
-                                                    }
-                                                });
-                                                query_the_records_TV.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View view) {
-                                                        getSupportFragmentManager().beginTransaction()
-                                                                .replace(R.id.ntsdk_activity_main_fl, QueryFragment.newInstance())
-                                                                .addToBackStack(null)
-                                                                .commit();
-                                                    }
-                                                });
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    });
-                } catch (RemoteException e) {
-                    Log.e(TAG, "RemoteException");
-                }
+//                try {
+//                    mBeaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
+//                    mBeaconManager.addRangeNotifier(new RangeNotifier() {
+//                        @Override
+//                        public void didRangeBeaconsInRegion(final Collection<Beacon> collection, final Region region) {
+//                            NewTaipeiSDKActivity.this.runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    for (Beacon b : collection) {
+//                                        uuid = b.getId1().toString();
+//                                        major = b.getId2().toString();
+//                                        minor = b.getId3().toString();
+//                                        if (b.getDistance() <= getBeaconTrigger()) {
+//                                            if (NLPI_BEACON_MAJOR_LIST.contains(major)) {
+//                                                Log.v(TAG, "major:" + major + " minor:" + minor);
+//                                                punch_time_service_TV.setBackgroundResource(R.mipmap.btn_bg_yellow_m);
+//                                                punch_time_service_TV.setOnClickListener(new View.OnClickListener() {
+//                                                    @Override
+//                                                    public void onClick(View view) {
+//                                                        getSupportFragmentManager().beginTransaction()
+//                                                                .replace(R.id.ntsdk_activity_main_fl, ServiceFragment.newInstance())
+//                                                                .addToBackStack(null)
+//                                                                .commit();
+//                                                    }
+//                                                });
+//                                                query_the_records_TV.setOnClickListener(new View.OnClickListener() {
+//                                                    @Override
+//                                                    public void onClick(View view) {
+//                                                        getSupportFragmentManager().beginTransaction()
+//                                                                .replace(R.id.ntsdk_activity_main_fl, QueryFragment.newInstance())
+//                                                                .addToBackStack(null)
+//                                                                .commit();
+//                                                    }
+//                                                });
+//                                                break;
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            });
+//                        }
+//                    });
+//                } catch (RemoteException e) {
+//                    Log.e(TAG, "RemoteException");
+//                }
             }
         });
         try {
@@ -185,25 +270,78 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
     @Override
     public void onLeScan(final BluetoothDevice device, int i, byte[] scanRecord) {
 
-        BatteryPowerData BP = BatteryPowerData.generateBatteryBeacon(scanRecord);
+//        BatteryPowerData BP = BatteryPowerData.generateBatteryBeacon(scanRecord);
+//
+//        if (BP != null && BP.BatteryUuid.toUpperCase().startsWith("00112233-4455-6677-8899-AABBCCDDEEFF")) {
+//            mBBHandler.obtainMessage(MSG_GET_DATA).sendToTarget();
+//            Log.e(TAG, "BatteryPower:" + BP.batteryPower +
+//                    "\naddress : " + device.getAddress() +
+//                    "\ndevice name : " + device.getName() +
+//                    "\nrssi : " + i);
+//            if (!device.getAddress().equals(mLastSendBatteryMac) && !mSendBatteryMac.contains(device.getAddress())) {
+//                mSendBatteryMac.add(device.getAddress());
+//                Log.v(TAG, "setBeaconBatteryLevel");
+//                NewTaipeiSDKApi.getInstance().setBeaconBatteryLevel(NewTaipeiSDKActivity.this,
+//                        device.getAddress(),
+//                        BP.batteryPower + "",
+//                        new NetworkManager.NetworkManagerListener<SendBeaconBatteryResponse>() {
+//                            @Override
+//                            public void onSucceed(SendBeaconBatteryResponse response) {
+//                                if (response.isSuccess()) {
+//                                    mLastSendBatteryMac = device.getAddress();
+//                                }
+//                            }
+//
+//                            @Override
+//                            public void onFail(String errorMsg, boolean shouldRetry) {
+//
+//                            }
+//                        });
+//            }
+//        }
 
-        if (BP != null && BP.BatteryUuid.toUpperCase().startsWith("00112233-4455-6677-8899-AABBCCDDEEFF")) {
-            mBBHandler.obtainMessage(MSG_GET_DATA).sendToTarget();
-            Log.e(TAG, "BatteryPower:" + BP.batteryPower +
-                    "\naddress : " + device.getAddress() +
-                    "\ndevice name : " + device.getName() +
-                    "\nrssi : " + i);
-            if (!device.getAddress().equals(mLastSendBatteryMac) && !mSendBatteryMac.contains(device.getAddress())) {
-                mSendBatteryMac.add(device.getAddress());
+        OmniguiderData omniguiderData = null;
+        try {
+            omniguiderData = OmniguiderData.generateiBeacon(scanRecord);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        String devName = device.getName();
+        if (omniguiderData != null) {
+            Log.d(TAG, "name:" + devName + ",User id:" + omniguiderData.userID + ",HW id:" + omniguiderData.hwID + ",TimeStamp:" + omniguiderData.TimeStamp
+                    + ",Stamp:" + omniguiderData.Stamp + ",voltage:" + omniguiderData.voltage + " V\n");
+
+            if (NLPI_BEACON_ID_LIST.contains(omniguiderData.hwID)) {
+                hwid = omniguiderData.hwID;
+                outside_range_TV.setVisibility(View.GONE);
+                punch_time_service_TV.setBackgroundResource(R.mipmap.btn_bg_yellow_m);
+                punch_time_service_TV.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.ntsdk_activity_main_fl, ServiceFragment.newInstance())
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                });
+
+                lastScanTime = Calendar.getInstance().getTime().getTime();
+            }
+
+            if (!omniguiderData.hwID.equals(mLastSendBatteryId) && !mSendBatteryId.contains(omniguiderData.hwID) && randomNum == 1) {
+                mSendBatteryId.add(omniguiderData.hwID);
                 Log.v(TAG, "setBeaconBatteryLevel");
+                final OmniguiderData finalOmniguiderData = omniguiderData;
                 NewTaipeiSDKApi.getInstance().setBeaconBatteryLevel(NewTaipeiSDKActivity.this,
-                        device.getAddress(),
-                        BP.batteryPower + "",
+                        omniguiderData.hwID,
+                        omniguiderData.voltage + "",
                         new NetworkManager.NetworkManagerListener<SendBeaconBatteryResponse>() {
                             @Override
                             public void onSucceed(SendBeaconBatteryResponse response) {
                                 if (response.isSuccess()) {
-                                    mLastSendBatteryMac = device.getAddress();
+                                    mLastSendBatteryId = finalOmniguiderData.hwID;
                                 }
                             }
 
@@ -213,6 +351,10 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
                             }
                         });
             }
+
+        } else {
+            //BLEData
+            //Log.d("debug", "BLE Data:" + bytesToHex(scanRecord));
         }
     }
 
@@ -265,6 +407,7 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
             if (!bluetoothAdapter.isEnabled()) {
                 Intent enableBluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBluetoothIntent, 77);
+                openBluetoothHint = true;
             }
         }
     }

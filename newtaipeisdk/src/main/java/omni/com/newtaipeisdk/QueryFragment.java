@@ -15,6 +15,7 @@ import android.widget.EditText;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import omni.com.newtaipeisdk.model.RecordData;
@@ -30,6 +31,9 @@ public class QueryFragment extends Fragment {
     private Calendar m_Calendar = Calendar.getInstance();
     private DatePickerDialog.OnDateSetListener datepicker_start;
     private DatePickerDialog.OnDateSetListener datepicker_end;
+    private Long currentDate;
+    private Long startDate;
+    private Long endDate;
 
     public static QueryFragment newInstance() {
         Bundle args = new Bundle();
@@ -61,6 +65,7 @@ public class QueryFragment extends Fragment {
                     String myFormat = "yyyy/MM/dd";
                     SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.TAIWAN);
                     start_time_et.setText(sdf.format(m_Calendar.getTime()));
+                    startDate = m_Calendar.getTime().getTime();
                 }
             };
 
@@ -73,6 +78,7 @@ public class QueryFragment extends Fragment {
                     String myFormat = "yyyy/MM/dd";
                     SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.TAIWAN);
                     end_time_et.setText(sdf.format(m_Calendar.getTime()));
+                    endDate = m_Calendar.getTime().getTime();
                 }
             };
 
@@ -102,30 +108,62 @@ public class QueryFragment extends Fragment {
                 }
             });
 
+            currentDate = new Date().getTime();
             mView.findViewById(R.id.fragment_record_query_tv).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    NewTaipeiSDKApi.getInstance().getRecord(getActivity(), NewTaipeiSDKActivity.userid,
-                            start_time_et.getText().toString(), end_time_et.getText().toString(),
-                            new NetworkManager.NetworkManagerListener<RecordData[]>() {
-                                @Override
-                                public void onSucceed(RecordData[] object) {
-                                    getActivity().getSupportFragmentManager().beginTransaction()
-                                            .replace(R.id.ntsdk_activity_main_fl, RecordFragment.newInstance(object))
-                                            .addToBackStack(null)
-                                            .commit();
-                                }
+                    if (startDate == null || endDate == null){
+                        DialogTools.getInstance().showErrorMessage(getActivity(), R.string.error,
+                                R.string.hint_input_correct_date, new DialogInterface.OnDismissListener() {
+                                    @Override
+                                    public void onDismiss(DialogInterface dialog) {
+                                    }
+                                });
+                    }
+                    else if (endDate > currentDate || startDate > currentDate) {
+                        DialogTools.getInstance().showErrorMessage(getActivity(), R.string.error,
+                                R.string.hint_more_than_current_date, new DialogInterface.OnDismissListener() {
+                                    @Override
+                                    public void onDismiss(DialogInterface dialog) {
+                                    }
+                                });
+                    } else if (endDate - startDate < 0) {
+                        DialogTools.getInstance().showErrorMessage(getActivity(), R.string.error,
+                                R.string.hint_start_more_than_end_date, new DialogInterface.OnDismissListener() {
+                                    @Override
+                                    public void onDismiss(DialogInterface dialog) {
+                                    }
+                                });
+                    } else if (Math.abs(startDate - endDate) / (1000 * 60 * 60 * 24) > 7) {
+                        DialogTools.getInstance().showErrorMessage(getActivity(), R.string.error,
+                                R.string.hint_more_than_seven_days, new DialogInterface.OnDismissListener() {
+                                    @Override
+                                    public void onDismiss(DialogInterface dialog) {
+                                    }
+                                });
+                    } else {
+                        NewTaipeiSDKApi.getInstance().getRecord(getActivity(), NewTaipeiSDKActivity.userid,
+                                start_time_et.getText().toString(), end_time_et.getText().toString(),
+                                new NetworkManager.NetworkManagerListener<RecordData[]>() {
+                                    @Override
+                                    public void onSucceed(RecordData[] object) {
+                                        getActivity().getSupportFragmentManager().beginTransaction()
+                                                .replace(R.id.ntsdk_activity_main_fl, RecordFragment.newInstance(object))
+                                                .addToBackStack(null)
+                                                .commit();
+                                    }
 
-                                @Override
-                                public void onFail(String errorMsg, boolean shouldRetry) {
-                                    DialogTools.getInstance().showErrorMessage(getActivity(), R.string.error,
-                                            R.string.hint_input_correct_date, new DialogInterface.OnDismissListener() {
-                                                @Override
-                                                public void onDismiss(DialogInterface dialog) {
-                                                }
-                                            });
-                                }
-                            });
+                                    @Override
+                                    public void onFail(String errorMsg, boolean shouldRetry) {
+                                        DialogTools.getInstance().showErrorMessage(getActivity(), R.string.error,
+                                                R.string.hint_input_correct_date, new DialogInterface.OnDismissListener() {
+                                                    @Override
+                                                    public void onDismiss(DialogInterface dialog) {
+                                                    }
+                                                });
+                                    }
+                                });
+                    }
                 }
 
             });

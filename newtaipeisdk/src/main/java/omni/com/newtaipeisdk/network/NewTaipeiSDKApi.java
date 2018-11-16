@@ -30,8 +30,7 @@ public class NewTaipeiSDKApi {
         Call<ClockResponse> setRecord(@Field("status") String status,
                                       @Field("username") String username,
                                       @Field("idcount") String idcount,
-                                      @Field("major") String major,
-                                      @Field("minor") String minor,
+                                      @Field("hwid") String hwid,
                                       @Field("timestamp") String timestamp,
                                       @Field("mac") String mac);
 
@@ -45,7 +44,7 @@ public class NewTaipeiSDKApi {
 
         @FormUrlEncoded
         @POST("api/set_beacon")
-        Call<SendBeaconBatteryResponse> setBeaconBatteryLevel(@Field("beacon_mac") String beaconMac,
+        Call<SendBeaconBatteryResponse> setBeaconBatteryLevel(@Field("hwid") String hwid,
                                                               @Field("voltage") String voltage,
                                                               @Field("timestamp") String timestamp,
                                                               @Field("mac") String mac);
@@ -56,14 +55,14 @@ public class NewTaipeiSDKApi {
     }
 
     public void setRecord(Activity activity, String status, String username, String idcount,
-                          String major, String minor, NetworkManager.NetworkManagerListener<ClockResponse> listener) {
+                          String hwid, NetworkManager.NetworkManagerListener<ClockResponse> listener) {
 
         DialogTools.getInstance().showProgress(activity);
 
         long currentTimestamp = System.currentTimeMillis() / 1000L;
         String mac = NetworkManager.getInstance().getMacStr(currentTimestamp);
         Call<ClockResponse> call = getClockService().setRecord(
-                status, username, idcount, major, minor, currentTimestamp + "", mac);
+                status, username, idcount, hwid, currentTimestamp + "", mac);
 
         NetworkManager.getInstance().addPostRequest(activity, call, ClockResponse.class, listener);
     }
@@ -82,14 +81,14 @@ public class NewTaipeiSDKApi {
         NetworkManager.getInstance().addPostRequestToCommonArrayObj(activity, call, RecordData[].class, listener);
     }
 
-    public void setBeaconBatteryLevel(Activity activity, String beaconMac, String voltage, NetworkManager.NetworkManagerListener<SendBeaconBatteryResponse> listener) {
+    public void setBeaconBatteryLevel(Activity activity, String hwid, String voltage, NetworkManager.NetworkManagerListener<SendBeaconBatteryResponse> listener) {
 
 //        DialogTools.getInstance().showProgress(activity);
 
         long currentTimestamp = System.currentTimeMillis() / 1000L;
         String mac = NetworkManager.getInstance().getMacStr(currentTimestamp);
         Call<SendBeaconBatteryResponse> call = getClockService().setBeaconBatteryLevel(
-                beaconMac, voltage, currentTimestamp + "", mac);
+                hwid, voltage, currentTimestamp + "", mac);
 
         NetworkManager.getInstance().addPostRequest(activity, call, SendBeaconBatteryResponse.class, listener);
     }
