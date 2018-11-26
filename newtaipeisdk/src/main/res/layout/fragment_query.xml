@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
     android:orientation="vertical">
 
     <LinearLayout
@@ -60,7 +61,8 @@
                 android:text="@string/query_the_records_start_time"
                 android:textColor="@color/ntsdk_blue"
                 android:textSize="20dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginRight="8dp" />
 
             <EditText
                 android:id="@+id/fragment_record_start_time_et"
@@ -96,7 +98,8 @@
                 android:text="@string/query_the_records_end_time"
                 android:textColor="@color/ntsdk_blue"
                 android:textSize="20dp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginRight="8dp" />
 
             <EditText
                 android:id="@+id/fragment_record_end_time_et"

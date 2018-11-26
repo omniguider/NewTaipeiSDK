@@ -21,6 +21,7 @@ public class RecordFragment extends Fragment {
     private RecordData[] mRecordData;
     private ListView record_list;
     private String record_time[];
+    private String beacon_desc[];
     private String record_status[];
 
     public static RecordFragment newInstance(RecordData[] object) {
@@ -37,9 +38,11 @@ public class RecordFragment extends Fragment {
         mRecordData = (RecordData[]) getArguments().getSerializable(ARG_KEY_RECORD_DATA);
         record_time = new String[mRecordData.length];
         record_status = new String[mRecordData.length];
+        beacon_desc = new String[mRecordData.length];
         for (int i = 0; i < mRecordData.length; i++) {
             record_time[i] = mRecordData[mRecordData.length - i - 1].getTimestamp();
             record_status[i] = mRecordData[mRecordData.length - i - 1].getStatus_name();
+            beacon_desc[i] = mRecordData[mRecordData.length - i - 1].getBeacon_desc();
         }
     }
 
@@ -58,7 +61,7 @@ public class RecordFragment extends Fragment {
             });
 
             record_list = mView.findViewById(R.id.fragment_record_lv);
-            RecordAdapter recordAdapter = new RecordAdapter(getActivity().getApplicationContext(), record_time, record_status);
+            RecordAdapter recordAdapter = new RecordAdapter(getActivity().getApplicationContext(), record_time, record_status, beacon_desc);
             record_list.setAdapter(recordAdapter);
         }
         return mView;
@@ -68,12 +71,14 @@ public class RecordFragment extends Fragment {
         Context context;
         String time[];
         String status[];
+        String desc[];
         LayoutInflater inflater;
 
-        public RecordAdapter(Context applicationContext, String[] time, String[] status) {
+        public RecordAdapter(Context applicationContext, String[] time, String[] status, String[] desc) {
             this.context = context;
             this.time = time;
             this.status = status;
+            this.desc = desc;
             inflater = (LayoutInflater.from(applicationContext));
         }
 
@@ -97,6 +102,7 @@ public class RecordFragment extends Fragment {
             view = inflater.inflate(R.layout.record_list_item, null);
             TextView date_tv = view.findViewById(R.id.record_list_item_date);
             TextView time_tv = view.findViewById(R.id.record_list_item_time);
+            TextView desc_tv = view.findViewById(R.id.record_list_item_loc);
             TextView status_tv = view.findViewById(R.id.record_list_item_status);
             String[] separated = time[position].split("\\s+");
             date_tv.setText(separated[0]);
@@ -119,6 +125,7 @@ public class RecordFragment extends Fragment {
                     status_tv.setTextColor(getResources().getColor(R.color.ntsdk_purple));
                     break;
             }
+            desc_tv.setText(desc[position]);
             return view;
         }
     }

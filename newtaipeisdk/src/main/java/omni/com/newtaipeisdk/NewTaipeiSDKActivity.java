@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -17,6 +18,7 @@ import android.os.RemoteException;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -24,28 +26,23 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.THLight.Omniguider.Lib.OmniguiderData;
-import com.THLight.USBeacon.App.Lib.BatteryPowerData;
 
-import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.MonitorNotifier;
-import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 import org.altbeacon.beacon.service.ArmaRssiFilter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-import java.util.Timer;
 
 import omni.com.newtaipeisdk.model.SendBeaconBatteryResponse;
 import omni.com.newtaipeisdk.network.NetworkManager;
 import omni.com.newtaipeisdk.network.NewTaipeiSDKApi;
 
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconConsumer, BluetoothAdapter.LeScanCallback {
 
     private String TAG = "NewTaipeiSDKActivity";
@@ -87,6 +84,8 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
     private Long lastScanTime = 0L;
     private boolean checkBluetooth = false;
     private boolean openBluetoothHint = false;
+    private boolean isResumed = false;
+    private BluetoothAdapter bluetoothAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -123,7 +122,7 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
         mSendBatteryMac = new ArrayList<>();
         mSendBatteryId = new ArrayList<>();
 
-        final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         checkLocationService();
         checkBluetoothOn();
@@ -136,6 +135,7 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
             @Override
             public void run() {
                 currentTime = Calendar.getInstance().getTime().getTime();
+                Log.e(TAG, "bluetoothAdapter.isEnabled()" + bluetoothAdapter.isEnabled());
                 if (currentTime - lastScanTime > PUNCH_TIME_OUT) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -143,6 +143,9 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
                             punch_time_service_TV.setBackgroundResource(R.mipmap.btn_bg_gray_m);
                             punch_time_service_TV.setClickable(false);
                             outside_range_TV.setVisibility(View.VISIBLE);
+                            if (ServiceFragment.isServiceFragment && isResumed) {
+                                getSupportFragmentManager().popBackStack();
+                            }
                         }
                     });
                 }
@@ -154,6 +157,9 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
                             punch_time_service_TV.setBackgroundResource(R.mipmap.btn_bg_gray_m);
                             punch_time_service_TV.setClickable(false);
                             outside_range_TV.setVisibility(View.VISIBLE);
+                            if (ServiceFragment.isServiceFragment) {
+                                getSupportFragmentManager().popBackStack();
+                            }
                         }
                     });
                     if (!openBluetoothHint) {
@@ -177,11 +183,20 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        isResumed = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isResumed = true;
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mBeaconManager != null) {
-            mBeaconManager.unbind(this);
-        }
         if (mBeaconManager != null) {
             mBeaconManager.unbind(this);
         }
@@ -313,7 +328,7 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
             Log.d(TAG, "name:" + devName + ",User id:" + omniguiderData.userID + ",HW id:" + omniguiderData.hwID + ",TimeStamp:" + omniguiderData.TimeStamp
                     + ",Stamp:" + omniguiderData.Stamp + ",voltage:" + omniguiderData.voltage + " V\n");
 
-            if (NLPI_BEACON_ID_LIST.contains(omniguiderData.hwID)) {
+            if (NLPI_BEACON_ID_LIST.contains(omniguiderData.hwID) && bluetoothAdapter.isEnabled()) {
                 hwid = omniguiderData.hwID;
                 outside_range_TV.setVisibility(View.GONE);
                 punch_time_service_TV.setBackgroundResource(R.mipmap.btn_bg_yellow_m);

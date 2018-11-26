@@ -1,9 +1,12 @@
 package omni.com.newtaipeisdk;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +28,7 @@ public class ServiceFragment extends Fragment {
     private String ON_DUTY_OT = "5";
     private String OFF_DUTY_OT = "6";
     private String FOR_TESTING = "7";
+    public static boolean isServiceFragment;
 
     public static ServiceFragment newInstance() {
         Bundle args = new Bundle();
@@ -36,6 +40,18 @@ public class ServiceFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        isServiceFragment = true;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        isServiceFragment = false;
     }
 
     @Nullable
@@ -52,6 +68,7 @@ public class ServiceFragment extends Fragment {
             });
 
             mView.findViewById(R.id.fragment_service_tv_punch_on_duty).setOnClickListener(new View.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
                 @Override
                 public void onClick(View view) {
                     callRecordApi(ON_DUTY, NewTaipeiSDKActivity.username, NewTaipeiSDKActivity.userid,
@@ -59,6 +76,7 @@ public class ServiceFragment extends Fragment {
                 }
             });
             mView.findViewById(R.id.fragment_service_tv_query_off_duty).setOnClickListener(new View.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
                 @Override
                 public void onClick(View view) {
                     callRecordApi(OFF_DUTY, NewTaipeiSDKActivity.username, NewTaipeiSDKActivity.userid,
@@ -66,6 +84,7 @@ public class ServiceFragment extends Fragment {
                 }
             });
             mView.findViewById(R.id.fragment_service_tv_go_out).setOnClickListener(new View.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
                 @Override
                 public void onClick(View view) {
                     callRecordApi(GO_OUT, NewTaipeiSDKActivity.username, NewTaipeiSDKActivity.userid,
@@ -73,6 +92,7 @@ public class ServiceFragment extends Fragment {
                 }
             });
             mView.findViewById(R.id.fragment_service_tv_come_back).setOnClickListener(new View.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
                 @Override
                 public void onClick(View view) {
                     callRecordApi(COME_BACK, NewTaipeiSDKActivity.username, NewTaipeiSDKActivity.userid,
@@ -80,6 +100,7 @@ public class ServiceFragment extends Fragment {
                 }
             });
             mView.findViewById(R.id.fragment_service_tv_on_duty_overtime).setOnClickListener(new View.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
                 @Override
                 public void onClick(View view) {
                     callRecordApi(ON_DUTY_OT, NewTaipeiSDKActivity.username, NewTaipeiSDKActivity.userid,
@@ -87,6 +108,7 @@ public class ServiceFragment extends Fragment {
                 }
             });
             mView.findViewById(R.id.fragment_service_tv_off_duty_overtime).setOnClickListener(new View.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
                 @Override
                 public void onClick(View view) {
                     callRecordApi(OFF_DUTY_OT, NewTaipeiSDKActivity.username, NewTaipeiSDKActivity.userid,
@@ -94,6 +116,7 @@ public class ServiceFragment extends Fragment {
                 }
             });
             mView.findViewById(R.id.fragment_service_tv_for_testing).setOnClickListener(new View.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
                 @Override
                 public void onClick(View view) {
                     callRecordApi(FOR_TESTING, NewTaipeiSDKActivity.username, NewTaipeiSDKActivity.userid,
@@ -113,7 +136,8 @@ public class ServiceFragment extends Fragment {
                         if (object.getErrorMessage() != null && object.getErrorMessage().equals("ACCESS_DENY")) {
                             showErrorMessage(getString(R.string.error_dialog_message_text_system_time));
                         } else {
-                            showSuccessMessage(title, object.getTimestamp());
+                            String[] separated = object.getTimestamp().split("\\s+");
+                            showSuccessMessage(title, separated[1]);
                         }
                     }
 
