@@ -160,12 +160,15 @@ public class QueryFragment extends Fragment {
 
                                     @Override
                                     public void onFail(String errorMsg, boolean shouldRetry) {
-                                        DialogTools.getInstance().showErrorMessage(getActivity(), R.string.error,
-                                                R.string.hint_input_correct_date, new DialogInterface.OnDismissListener() {
-                                                    @Override
-                                                    public void onDismiss(DialogInterface dialog) {
-                                                    }
-                                                });
+                                        if (errorMsg.equals("Forbidden")) {
+                                            DialogTools.getInstance().showErrorMessage(getActivity(), R.string.error, getString(R.string.error_dialog_message_text_outside_domain));
+                                        }
+//                                        DialogTools.getInstance().showErrorMessage(getActivity(), R.string.error,
+//                                                R.string.hint_input_correct_date, new DialogInterface.OnDismissListener() {
+//                                                    @Override
+//                                                    public void onDismiss(DialogInterface dialog) {
+//                                                    }
+//                                                });
                                     }
                                 });
                     }

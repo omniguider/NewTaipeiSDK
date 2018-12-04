@@ -45,7 +45,7 @@ import omni.com.newtaipeisdk.network.NewTaipeiSDKApi;
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconConsumer, BluetoothAdapter.LeScanCallback {
 
-    private String TAG = "NewTaipeiSDKActivity";
+    public static String TAG = "NewTaipeiSDKActivity";
     final int PUNCH_TIME_OUT = 5000;
     private BeaconManager mBeaconManager;
     private HandlerThread mBBHandlerThread;
@@ -98,6 +98,13 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
         for (int i = 1601; i <= beaconNum; i++) {
             NLPI_BEACON_ID_LIST.add(String.valueOf(i));
         }
+
+        findViewById(R.id.ntsdk_activity_main_fl_back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         mBeaconManager = BeaconManager.getInstanceForApplication(this);
         mBeaconManager.setAndroidLScanningDisabled(true);

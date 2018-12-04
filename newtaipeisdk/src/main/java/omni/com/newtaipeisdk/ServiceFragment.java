@@ -2,6 +2,7 @@ package omni.com.newtaipeisdk;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,6 +13,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.Calendar;
 
 import omni.com.newtaipeisdk.model.ClockResponse;
 import omni.com.newtaipeisdk.network.NetworkManager;
@@ -29,6 +32,9 @@ public class ServiceFragment extends Fragment {
     private String OFF_DUTY_OT = "6";
     private String FOR_TESTING = "7";
     public static boolean isServiceFragment;
+    private Long currentTime = 0L;
+    final int PUNCH_TIME_OUT = 600000;
+    private SharedPreferences settings = null;
 
     public static ServiceFragment newInstance() {
         Bundle args = new Bundle();
@@ -127,25 +133,40 @@ public class ServiceFragment extends Fragment {
         return mView;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void callRecordApi(String status, String username, String idcount, String hwid, final String title) {
 
-        NewTaipeiSDKApi.getInstance().setRecord(getActivity(), status, username, idcount, hwid,
-                new NetworkManager.NetworkManagerListener<ClockResponse>() {
-                    @Override
-                    public void onSucceed(ClockResponse object) {
-                        if (object.getErrorMessage() != null && object.getErrorMessage().equals("ACCESS_DENY")) {
-                            showErrorMessage(getString(R.string.error_dialog_message_text_system_time));
-                        } else {
-                            String[] separated = object.getTimestamp().split("\\s+");
-                            showSuccessMessage(title, separated[1]);
-                        }
-                    }
+        currentTime = Calendar.getInstance().getTime().getTime();
+        settings = getActivity().getSharedPreferences(NewTaipeiSDKActivity.TAG, 0);
+        Long lastPunchTime = settings.getLong("lastPunchTime", 0);
+        if (currentTime - lastPunchTime < PUNCH_TIME_OUT) {
+            showErrorMessage(getString(R.string.error_dialog_message_text_ten_minutes));
+            getActivity().getSupportFragmentManager().popBackStack();
+        } else {
+            NewTaipeiSDKApi.getInstance().setRecord(getActivity(), status, username, idcount, hwid,
+                    new NetworkManager.NetworkManagerListener<ClockResponse>() {
+                        @Override
+                        public void onSucceed(ClockResponse object) {
+                            SharedPreferences.Editor editor = settings.edit();
+                            editor.putLong("lastPunchTime", Calendar.getInstance().getTime().getTime());
+                            editor.commit();
 
-                    @Override
-                    public void onFail(String errorMsg, boolean shouldRetry) {
-                        showErrorMessage(errorMsg);
-                    }
-                });
+                            if (object.getErrorMessage() != null && object.getErrorMessage().equals("ACCESS_DENY")) {
+                                showErrorMessage(getString(R.string.error_dialog_message_text_system_time));
+                            } else {
+                                String[] separated = object.getTimestamp().split("\\s+");
+                                showSuccessMessage(title, separated[1]);
+                            }
+                        }
+
+                        @Override
+                        public void onFail(String errorMsg, boolean shouldRetry) {
+                            if (errorMsg.equals("Forbidden")) {
+                                showErrorMessage(getString(R.string.error_dialog_message_text_outside_domain));
+                            }
+                        }
+                    });
+        }
     }
 
     private void showSuccessMessage(String title, String successMsg) {

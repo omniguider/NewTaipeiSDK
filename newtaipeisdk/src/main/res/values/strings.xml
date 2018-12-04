@@ -38,5 +38,7 @@
     <string name="hint_start_more_than_end_date">開始日期不能晚於結束日期</string>
     <string name="error_dialog_message_text_system_time">請將手機時間改為自動設定</string>
     <string name="error_dialog_message_text_outside_range">您的位置不在刷卡範圍</string>
+    <string name="error_dialog_message_text_outside_domain">請連接指定的網路連線</string>
+    <string name="error_dialog_message_text_ten_minutes">10分鐘內不能再打卡</string>
 
 </resources>
