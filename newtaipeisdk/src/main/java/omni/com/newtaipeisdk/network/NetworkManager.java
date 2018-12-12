@@ -79,7 +79,7 @@ public class NetworkManager {
 
     public String getMacStr(long currentTimestamp) {
         try {
-            return SHA1("ntpcapp://" + currentTimestamp);
+            return SHA256("ntpcapp://" + currentTimestamp);
         } catch (NoSuchAlgorithmException e) {
             Log.e("@W@", "NoSuchAlgorithmException cause : " + e.getCause());
             return "";
@@ -292,8 +292,8 @@ public class NetworkManager {
         return buf.toString();
     }
 
-    public static String SHA1(String text) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        MessageDigest md = MessageDigest.getInstance("SHA-1");
+    public static String SHA256(String text) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
         byte[] textBytes = text.getBytes("iso-8859-1");
         md.update(textBytes, 0, textBytes.length);
         byte[] sha1hash = md.digest();
