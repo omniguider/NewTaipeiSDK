@@ -134,7 +134,7 @@ public class ServiceFragment extends Fragment {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    private void callRecordApi(String status, String username, String idcount, String hwid, final String title) {
+    private void callRecordApi(final String status, String username, String idcount, String hwid, final String title) {
 
         currentTime = Calendar.getInstance().getTime().getTime();
         settings = getActivity().getSharedPreferences(NewTaipeiSDKActivity.TAG, 0);
@@ -147,9 +147,11 @@ public class ServiceFragment extends Fragment {
                     new NetworkManager.NetworkManagerListener<ClockResponse>() {
                         @Override
                         public void onSucceed(ClockResponse object) {
-                            SharedPreferences.Editor editor = settings.edit();
-                            editor.putLong("lastPunchTime", Calendar.getInstance().getTime().getTime());
-                            editor.commit();
+                            if (!status.equals(FOR_TESTING)) {
+                                SharedPreferences.Editor editor = settings.edit();
+                                editor.putLong("lastPunchTime", Calendar.getInstance().getTime().getTime());
+                                editor.commit();
+                            }
 
                             if (object.getErrorMessage() != null && object.getErrorMessage().equals("ACCESS_DENY")) {
                                 showErrorMessage(getString(R.string.error_dialog_message_text_system_time));
