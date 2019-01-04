@@ -139,7 +139,7 @@ public class ServiceFragment extends Fragment {
         currentTime = Calendar.getInstance().getTime().getTime();
         settings = getActivity().getSharedPreferences(NewTaipeiSDKActivity.TAG, 0);
         Long lastPunchTime = settings.getLong("lastPunchTime", 0);
-        if (currentTime - lastPunchTime < PUNCH_TIME_OUT) {
+        if (currentTime - lastPunchTime < PUNCH_TIME_OUT && !status.equals(FOR_TESTING)) {
             showErrorMessage(getString(R.string.error_dialog_message_text_ten_minutes));
             getActivity().getSupportFragmentManager().popBackStack();
         } else {
@@ -153,6 +153,8 @@ public class ServiceFragment extends Fragment {
 
                             if (object.getErrorMessage() != null && object.getErrorMessage().equals("ACCESS_DENY")) {
                                 showErrorMessage(getString(R.string.error_dialog_message_text_system_time));
+                            } else if (object.getResult().equals("false") && object.getErrorMessage() != null) {
+                                showErrorMessage(object.getErrorMessage());
                             } else {
                                 String[] separated = object.getTimestamp().split("\\s+");
                                 showSuccessMessage(title, separated[1]);

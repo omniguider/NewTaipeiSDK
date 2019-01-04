@@ -28,7 +28,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NetworkManager {
 
-    public static final String DOMAIN_NAME = "http://bp-test.ntpc.gov.tw/";
+    public static final String DOMAIN_NAME = "http://bp.ntpc.gov.tw/";
+//    public static final String DOMAIN_NAME = "http://bp-test.ntpc.gov.tw/";
     public static final String API_RESULT_TRUE = "true";
     private static NetworkManager mNetworkManager;
     private Retrofit mRetrofit;
@@ -79,6 +80,7 @@ public class NetworkManager {
 
     public String getMacStr(long currentTimestamp) {
         try {
+//            return SHA1("ntpcapp://" + currentTimestamp);
             return SHA256("ntpcapp://" + currentTimestamp);
         } catch (NoSuchAlgorithmException e) {
             Log.e("@W@", "NoSuchAlgorithmException cause : " + e.getCause());
@@ -290,6 +292,14 @@ public class NetworkManager {
             } while (two_halfs++ < 1);
         }
         return buf.toString();
+    }
+
+    public static String SHA1(String text) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        MessageDigest md = MessageDigest.getInstance("SHA-1");
+        byte[] textBytes = text.getBytes("iso-8859-1");
+        md.update(textBytes, 0, textBytes.length);
+        byte[] sha1hash = md.digest();
+        return convertToHex(sha1hash);
     }
 
     public static String SHA256(String text) throws NoSuchAlgorithmException, UnsupportedEncodingException {
