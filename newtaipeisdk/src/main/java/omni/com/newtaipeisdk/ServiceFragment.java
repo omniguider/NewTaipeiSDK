@@ -147,17 +147,18 @@ public class ServiceFragment extends Fragment {
                     new NetworkManager.NetworkManagerListener<ClockResponse>() {
                         @Override
                         public void onSucceed(ClockResponse object) {
-                            if (!status.equals(FOR_TESTING)) {
-                                SharedPreferences.Editor editor = settings.edit();
-                                editor.putLong("lastPunchTime", Calendar.getInstance().getTime().getTime());
-                                editor.commit();
-                            }
 
                             if (object.getErrorMessage() != null && object.getErrorMessage().equals("ACCESS_DENY")) {
                                 showErrorMessage(getString(R.string.error_dialog_message_text_system_time));
                             } else if (object.getResult().equals("false") && object.getErrorMessage() != null) {
                                 showErrorMessage(object.getErrorMessage());
                             } else {
+                                if (!status.equals(FOR_TESTING)) {
+                                    SharedPreferences.Editor editor = settings.edit();
+                                    editor.putLong("lastPunchTime", Calendar.getInstance().getTime().getTime());
+                                    editor.commit();
+                                }
+
                                 String[] separated = object.getTimestamp().split("\\s+");
                                 showSuccessMessage(title, separated[1]);
                             }
