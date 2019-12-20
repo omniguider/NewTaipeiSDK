@@ -28,7 +28,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NetworkManager {
 
-    public static final String DOMAIN_NAME = "http://bp.ntpc.gov.tw/";
+    public static final String DOMAIN_NAME = "https://bp.ntpc.gov.tw/";
 //    public static final String DOMAIN_NAME = "http://bp-test.ntpc.gov.tw/";
     public static final String API_RESULT_TRUE = "true";
     private static NetworkManager mNetworkManager;
