@@ -1,6 +1,0 @@
-<resources>
-    <string name="app_name">NewTaipeiSDKdemo</string>
-    <string name="mobile_punch_time">手機打卡</string>
-    <string name="user_name">員工姓名</string>
-    <string name="user_id">員工帳號</string>
-</resources>
