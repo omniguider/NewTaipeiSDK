@@ -16,20 +16,21 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.os.RemoteException;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 
 import com.THLight.Omniguider.Lib.OmniguiderData;
 
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
+import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.Region;
 import org.altbeacon.beacon.service.ArmaRssiFilter;
@@ -38,13 +39,20 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import omni.com.newtaipeisdk.beacon.BaseBleActivity;
+import omni.com.newtaipeisdk.beacon.M4Beacon;
+import omni.com.newtaipeisdk.beacon.M4BeaconWithCounter;
+import omni.com.newtaipeisdk.model.BeaconInfoData;
 import omni.com.newtaipeisdk.model.SendBeaconBatteryResponse;
 import omni.com.newtaipeisdk.network.NetworkManager;
 import omni.com.newtaipeisdk.network.NewTaipeiSDKApi;
 
-@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconConsumer, BluetoothAdapter.LeScanCallback {
+import static com.m4grid.lib.m4Beacon.RawDevice.Decrypt;
 
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsumer, BluetoothAdapter.LeScanCallback {
+
+    List<M4BeaconWithCounter> currentBeacons = new ArrayList<M4BeaconWithCounter>();
     public static String TAG = "NewTaipeiSDKActivity";
     final int PUNCH_TIME_OUT = 5000;
     private BeaconManager mBeaconManager;
@@ -56,10 +64,11 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
     final List<String> NLPI_BEACON_MAJOR_LIST = new ArrayList<String>() {{
         add("7016");
     }};
-    final List<String> NLPI_BEACON_ID_LIST = new ArrayList<String>();
+    public static final List<String> NLPI_BEACON_ID_LIST = new ArrayList<String>();
     public static final String BEACON_LAYOUT = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24";
     private static final float beaconTrigger10 = 10f;
     private static final int beaconNum = 1620;
+    private static final String uid = "F0CE7A96E6A4";
     final int MSG_LE_START_SCAN = 1000;
     final int MSG_LE_STOP_SCAN = 1001;
     final int MSG_GET_DATA = 1002;
@@ -77,27 +86,89 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
     private String ARG_KEY_USERID = "arg_key_userid";
     private String mLastSendBatteryMac;
     private ArrayList<String> mSendBatteryMac;
-    private String mLastSendBatteryId;
+    public static String mLastSendBatteryId = "mLastSendBatteryId";
     private ArrayList<String> mSendBatteryId;
-    private int randomNum;
+    public static int randomNum;
     private Long currentTime = 0L;
     private Long lastScanTime = 0L;
     private boolean checkBluetooth = false;
     private boolean openBluetoothHint = false;
     private boolean isResumed = false;
+    private boolean isActive = false;
     private BluetoothAdapter bluetoothAdapter;
+
+    private BeaconInfoData[] mBeaconInfoData;
+    private boolean isClockBeacon = false;
+    public static int randomLevel = 1;
+
+    @Override
+    public void onReceivedBeacon(List<M4BeaconWithCounter> resultBeacons) {
+        Log.e(TAG, "onReceivedBeacon");
+        currentBeacons.clear();
+        currentBeacons.addAll(resultBeacons);
+    }
+
+    @Override
+    public String onDecryptBeacon(String rawUid) {
+        byte[] keyBytes = M4Beacon.hexStringToByteArray(getAESKey().toString());//from native C string
+        byte[] ivBytes = M4Beacon.hexStringToByteArray(getIVector().toString());//from native C string
+
+        //get UID based on AESKEY and IV
+        String realUid = Decrypt(rawUid, keyBytes, ivBytes);
+        Log.e(TAG, "realUid" + realUid);
+
+        for (BeaconInfoData beaconInfoData : mBeaconInfoData) {
+            if (beaconInfoData.getHWID().equals(realUid) && beaconInfoData.getClockEnabled().equals("Y")) {
+                isClockBeacon = true;
+                randomLevel = beaconInfoData.getUPDTE_RATE();
+                NLPI_BEACON_ID_LIST.add(realUid);
+                break;
+            }
+        }
+        if (isClockBeacon && !isActive) {
+            isActive = true;
+            outside_range_TV.setVisibility(View.GONE);
+            punch_time_service_TV.setBackgroundResource(R.mipmap.btn_bg_yellow_m);
+            punch_time_service_TV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.ntsdk_activity_main_fl, ServiceFragment.newInstance())
+                            .addToBackStack(null)
+                            .commit();
+                }
+            });
+            lastScanTime = Calendar.getInstance().getTime().getTime();
+        }
+
+        return realUid;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ntsdk_activity_main);
 
+        super.ProximityUUID = "26cbdba2-8dd8-4e54-adf4-b51f0caea6e6";
+        super.ProcessLengthSec = 10; //10 second to clear not found beacon
+
         username = getIntent().getStringExtra(ARG_KEY_USERNAME);
         userid = getIntent().getStringExtra(ARG_KEY_USERID);
 
-        for (int i = 1601; i <= beaconNum; i++) {
-            NLPI_BEACON_ID_LIST.add(String.valueOf(i));
-        }
+//        for (int i = 1601; i <= beaconNum; i++) {
+//            NLPI_BEACON_ID_LIST.add(String.valueOf(i));
+//        }
+
+        NewTaipeiSDKApi.getInstance().getBeaconInfo(this, new NetworkManager.NetworkManagerListener<BeaconInfoData[]>() {
+            @Override
+            public void onSucceed(BeaconInfoData[] beaconInfoData) {
+                mBeaconInfoData = beaconInfoData;
+            }
+
+            @Override
+            public void onFail(String errorMsg, boolean shouldRetry) {
+            }
+        });
 
         findViewById(R.id.ntsdk_activity_main_fl_back).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,6 +218,7 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            isActive = false;
                             punch_time_service_TV.setBackgroundResource(R.mipmap.btn_bg_gray_m);
                             punch_time_service_TV.setClickable(false);
                             outside_range_TV.setVisibility(View.VISIBLE);
@@ -161,6 +233,7 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            isActive = false;
                             punch_time_service_TV.setBackgroundResource(R.mipmap.btn_bg_gray_m);
                             punch_time_service_TV.setClickable(false);
                             outside_range_TV.setVisibility(View.VISIBLE);
@@ -190,13 +263,13 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         isResumed = false;
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         isResumed = true;
     }
@@ -224,6 +297,15 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
 
     @Override
     public void onBeaconServiceConnect() {
+        Log.e(TAG, "onBeaconServiceConnect");
+        Region region = new Region("all-beacons-region", Identifier.parse(ProximityUUID), null, null);
+        try {
+            mBeaconManager.startRangingBeaconsInRegion(region);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        mBeaconManager.setRangeNotifier(this);
+
         mBeaconManager.addMonitorNotifier(new MonitorNotifier() {
             @Override
             public void didEnterRegion(Region region) {
@@ -335,7 +417,15 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
             Log.d(TAG, "name:" + devName + ",User id:" + omniguiderData.userID + ",HW id:" + omniguiderData.hwID + ",TimeStamp:" + omniguiderData.TimeStamp
                     + ",Stamp:" + omniguiderData.Stamp + ",voltage:" + omniguiderData.voltage + " V\n");
 
-            if (NLPI_BEACON_ID_LIST.contains(omniguiderData.hwID) && bluetoothAdapter.isEnabled()) {
+            for (BeaconInfoData beaconInfoData : mBeaconInfoData) {
+                if (beaconInfoData.getHWID().equals(omniguiderData.hwID) && beaconInfoData.getClockEnabled().equals("Y")) {
+                    isClockBeacon = true;
+                    randomLevel = beaconInfoData.getUPDTE_RATE();
+                    break;
+                }
+            }
+//            if (NLPI_BEACON_ID_LIST.contains(omniguiderData.hwID) && bluetoothAdapter.isEnabled()) {
+            if (isClockBeacon && bluetoothAdapter.isEnabled()) {
                 hwid = omniguiderData.hwID;
                 outside_range_TV.setVisibility(View.GONE);
                 punch_time_service_TV.setBackgroundResource(R.mipmap.btn_bg_yellow_m);
@@ -352,7 +442,7 @@ public class NewTaipeiSDKActivity extends AppCompatActivity implements BeaconCon
                 lastScanTime = Calendar.getInstance().getTime().getTime();
             }
 
-            if (!omniguiderData.hwID.equals(mLastSendBatteryId) && !mSendBatteryId.contains(omniguiderData.hwID) && randomNum == 1) {
+            if (!omniguiderData.hwID.equals(mLastSendBatteryId) && !mSendBatteryId.contains(omniguiderData.hwID) && randomNum < randomLevel) {
                 mSendBatteryId.add(omniguiderData.hwID);
                 Log.v(TAG, "setBeaconBatteryLevel");
                 final OmniguiderData finalOmniguiderData = omniguiderData;

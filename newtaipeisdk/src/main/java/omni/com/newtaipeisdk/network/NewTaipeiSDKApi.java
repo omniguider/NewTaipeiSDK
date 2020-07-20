@@ -2,6 +2,7 @@ package omni.com.newtaipeisdk.network;
 
 import android.app.Activity;
 
+import omni.com.newtaipeisdk.model.BeaconInfoData;
 import omni.com.newtaipeisdk.model.ClockResponse;
 import omni.com.newtaipeisdk.model.CommonArrayResponse;
 import omni.com.newtaipeisdk.model.RecordData;
@@ -10,7 +11,9 @@ import omni.com.newtaipeisdk.tool.DialogTools;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public class NewTaipeiSDKApi {
 
@@ -48,6 +51,10 @@ public class NewTaipeiSDKApi {
                                                               @Field("voltage") String voltage,
                                                               @Field("timestamp") String timestamp,
                                                               @Field("mac") String mac);
+
+        @GET("api/beacon")
+        Call<BeaconInfoData[]> getBeaconInfo(@Query("timestamp") String timestamp,
+                                             @Query("mac") String mac);
     }
 
     private ClockService getClockService() {
@@ -91,5 +98,14 @@ public class NewTaipeiSDKApi {
                 hwid, voltage, currentTimestamp + "", mac);
 
         NetworkManager.getInstance().addPostRequest(activity, call, SendBeaconBatteryResponse.class, listener);
+    }
+
+    public void getBeaconInfo(Activity activity, NetworkManager.NetworkManagerListener<BeaconInfoData[]> listener) {
+
+        long currentTimestamp = System.currentTimeMillis() / 1000L;
+        String mac = NetworkManager.getInstance().getMacStr(currentTimestamp);
+        Call<BeaconInfoData[]> call = getClockService().getBeaconInfo(currentTimestamp + "", mac);
+
+        NetworkManager.getInstance().addPostRequest(activity, call, BeaconInfoData[].class, listener);
     }
 }

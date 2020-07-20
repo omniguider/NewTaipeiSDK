@@ -6,9 +6,10 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import java.lang.ref.WeakReference;
 
@@ -135,6 +136,7 @@ public class DialogTools {
                         }
                     },
                     null, null);
+            dialog.setCanceledOnTouchOutside(false);
 
             if (dismissListener != null) {
                 dialog.setOnDismissListener(dismissListener);

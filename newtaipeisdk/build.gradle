@@ -6,13 +6,18 @@ android {
 
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 18
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        externalNativeBuild {
+            cmake {
+                cppFlags ""
+            }
+        }
     }
 
     buildTypes {
@@ -22,18 +27,30 @@ android {
         }
     }
 
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
+
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:28.0.0-rc02'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'org.altbeacon:android-beacon-library:2+'
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
-    implementation 'com.google.code.gson:gson:2.8.0'
+    implementation 'com.google.code.gson:gson:2.8.2'
 //    implementation files('libs/libusbeaconapp.jar')
     implementation files('libs/libomniguider.jar')
+
+    implementation 'com.google.firebase:firebase-core:17.2.3'
+    implementation 'com.google.firebase:firebase-messaging:20.1.2'
+    implementation 'com.google.firebase:firebase-database:19.2.1'
+
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
 }
