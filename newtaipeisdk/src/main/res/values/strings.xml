@@ -1,0 +1,44 @@
+<resources>
+
+    <string name="app_name">NewTaipeiSDK</string>
+    <string name="punch_time_service">按刷卡服務</string>
+    <string name="query_the_records">記錄查詢</string>
+    <string name="current_time">現在時刻</string>
+    <string name="on_duty">上班</string>
+    <string name="off_duty">下班</string>
+    <string name="go_out">外出</string>
+    <string name="come_back">返回</string>
+    <string name="on_duty_overtime">加班上班</string>
+    <string name="off_duty_overtime">加班下班</string>
+    <string name="for_testing">測試</string>
+    <string name="on_duty_time">上班時間</string>
+    <string name="off_duty_time">下班時間</string>
+    <string name="go_out_time">外出時間</string>
+    <string name="come_back_time">返回時間</string>
+    <string name="on_duty_overtime_time">加班上班時間</string>
+    <string name="off_duty_overtime_time">加班下班時間</string>
+    <string name="for_testing_time">測試時間</string>
+    <string name="query_the_records_start_time">開始日期</string>
+    <string name="query_the_records_end_time">結束日期</string>
+    <string name="query">查詢</string>
+    <string name="record_date">日期</string>
+    <string name="record_time">時間</string>
+    <string name="record_location">位置</string>
+    <string name="record_status">狀態</string>
+
+    <string name="error_dialog_title_text_no_network">無連接網路</string>
+    <string name="error_dialog_message_text_no_network">請檢查網路連線</string>
+    <string name="dialog_button_ok_text">確定</string>
+    <string name="error">錯誤</string>
+    <string name="error_dialog_title_text_unknown">發生未預期錯誤</string>
+    <string name="dialog_message_network_connect_not_good">此處無可供服務流量之網路，請移動至適當區域，檢查連線狀況後再試。</string>
+    <string name="hint_input_correct_date">請輸入正確的日期</string>
+    <string name="hint_more_than_current_date">查詢日期不能晚於今天</string>
+    <string name="hint_more_than_seven_days">查詢期間最多七天</string>
+    <string name="hint_start_more_than_end_date">開始日期不能晚於結束日期</string>
+    <string name="error_dialog_message_text_system_time">請將手機時間改為自動設定</string>
+    <string name="error_dialog_message_text_outside_range">您的位置不在刷卡範圍</string>
+    <string name="error_dialog_message_text_outside_domain">請連接指定的網路連線</string>
+    <string name="error_dialog_message_text_ten_minutes">10分鐘內不能再打卡</string>
+
+</resources>
