@@ -40,18 +40,26 @@ import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.randomNum;
 
 //import static lib
 public abstract class BaseBleActivity extends AppCompatActivity implements BeaconConsumer, RangeNotifier {
-    static {
-        System.loadLibrary("native-lib");
-    }
+//    static {
+//        System.loadLibrary("native-lib");
+//    }
 
     /**
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.
      */
 
-    public native String getAESKey();
+    public String getAESKey() {
+        return "0227022850022709690808932355050f";
+    }
 
-    public native String getIVector();
+    ;
+
+    public String getIVector() {
+        return "65cc4c0b6cf9c56e2a2d801df1b99d01";
+    }
+
+    ;
 
     //abstract method
     public abstract void onReceivedBeacon(List<M4BeaconWithCounter> findBeacons);
