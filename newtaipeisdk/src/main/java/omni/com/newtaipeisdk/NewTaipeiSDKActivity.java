@@ -110,6 +110,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
 
     @Override
     public String onDecryptBeacon(String rawUid) {
+        Log.e(TAG, "onDecryptBeacon");
         byte[] keyBytes = M4Beacon.hexStringToByteArray(getAESKey().toString());//from native C string
         byte[] ivBytes = M4Beacon.hexStringToByteArray(getIVector().toString());//from native C string
 

@@ -183,9 +183,8 @@ public abstract class BaseBleActivity extends AppCompatActivity implements Beaco
                         rawUid = beacon.getIdentifier(3).toHexString().substring(2) + "" + beacon.getIdentifier(4).toHexString().substring(2);
                     }
                 } catch (IndexOutOfBoundsException e) {
-                    continue;
                 }
-
+                Log.i(TAG, "rawUid=" + rawUid);
                 M4Beacon m4Beacon = new M4Beacon(ProximityUUID, majorId.toInt(), minorId.toInt(), beacon.getTxPower(), beacon.getRssi(), beacon.getDataFields().get(0).intValue());
 
                 if (!shortName.isEmpty()) {
