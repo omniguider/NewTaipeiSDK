@@ -54,7 +54,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
 
     List<M4BeaconWithCounter> currentBeacons = new ArrayList<M4BeaconWithCounter>();
     public static String TAG = "NewTaipeiSDKActivity";
-    final int PUNCH_TIME_OUT = 5000;
+    final int PUNCH_TIME_OUT = 10000;
     private BeaconManager mBeaconManager;
     private HandlerThread mBBHandlerThread;
     private Handler mBBHandler;
@@ -122,10 +122,12 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
                 isClockBeacon = true;
                 randomLevel = beaconInfoData.getUPDTE_RATE();
                 NLPI_BEACON_ID_LIST.add(realUid);
+                lastScanTime = Calendar.getInstance().getTime().getTime();
                 break;
             }
         }
         if (isClockBeacon && !isActive) {
+            hwid = realUid;
             isActive = true;
             outside_range_TV.setVisibility(View.GONE);
             punch_time_service_TV.setBackgroundResource(R.mipmap.btn_bg_yellow_m);
@@ -138,7 +140,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
                             .commit();
                 }
             });
-            lastScanTime = Calendar.getInstance().getTime().getTime();
+//            lastScanTime = Calendar.getInstance().getTime().getTime();
         }
 
         return realUid;

@@ -170,8 +170,12 @@ public abstract class BaseBleActivity extends AppCompatActivity implements Beaco
 //                Log.i(TAG, "mac id=" + beacon.getBluetoothAddress() + " service " + beacon.getIdentifier(3) + " " + beacon.getIdentifier(4).toHexString());
 
                 String rawUid = "";
-                if (beacon.getIdentifier(3) != null) {
-                    rawUid = beacon.getIdentifier(3).toHexString().substring(2) + "" + beacon.getIdentifier(4).toHexString().substring(2);
+                try {
+                    if (beacon.getIdentifier(3) != null) {
+                        rawUid = beacon.getIdentifier(3).toHexString().substring(2) + "" + beacon.getIdentifier(4).toHexString().substring(2);
+                    }
+                } catch (IndexOutOfBoundsException e) {
+                    continue;
                 }
 
                 M4Beacon m4Beacon = new M4Beacon(ProximityUUID, majorId.toInt(), minorId.toInt(), beacon.getTxPower(), beacon.getRssi(), beacon.getDataFields().get(0).intValue());

@@ -10,7 +10,7 @@
         android:background="@color/gray_f3"
         android:orientation="vertical">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/ntsdk_blue">
@@ -40,7 +40,7 @@
                 android:textSize="@dimen/text_size_action_bar"
                 android:textStyle="bold" />
 
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
         <LinearLayout
             android:layout_width="match_parent"

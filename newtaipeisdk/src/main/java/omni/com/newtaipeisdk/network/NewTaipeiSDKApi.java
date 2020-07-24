@@ -1,6 +1,7 @@
 package omni.com.newtaipeisdk.network;
 
 import android.app.Activity;
+import android.util.Log;
 
 import omni.com.newtaipeisdk.model.BeaconInfoData;
 import omni.com.newtaipeisdk.model.ClockResponse;
@@ -65,7 +66,10 @@ public class NewTaipeiSDKApi {
                           String hwid, NetworkManager.NetworkManagerListener<ClockResponse> listener) {
 
         DialogTools.getInstance().showProgress(activity);
-
+        Log.e("NTS","status"+status);
+        Log.e("NTS","username"+username);
+        Log.e("NTS","idcount"+idcount);
+        Log.e("NTS","hwid"+hwid);
         long currentTimestamp = System.currentTimeMillis() / 1000L;
         String mac = NetworkManager.getInstance().getMacStr(currentTimestamp);
         Call<ClockResponse> call = getClockService().setRecord(
