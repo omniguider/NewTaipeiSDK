@@ -65,7 +65,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
         add("7016");
     }};
     public static final List<String> NLPI_BEACON_ID_LIST = new ArrayList<String>();
-    public static final String BEACON_LAYOUT = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24";
+    public static final String BEACON_LAYOUT = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:29-29,i:34-39,i:40-41,i:46-47";
     private static final float beaconTrigger10 = 10f;
     private static final int beaconNum = 1620;
     private static final String uid = "F0CE7A96E6A4";
