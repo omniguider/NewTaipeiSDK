@@ -416,7 +416,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
         }
 
         String devName = device.getName();
-        if (omniguiderData != null) {
+        if (omniguiderData != null && mBeaconInfoData != null) {
             Log.d(TAG, "name:" + devName + ",User id:" + omniguiderData.userID + ",HW id:" + omniguiderData.hwID + ",TimeStamp:" + omniguiderData.TimeStamp
                     + ",Stamp:" + omniguiderData.Stamp + ",voltage:" + omniguiderData.voltage + " V\n");
 
