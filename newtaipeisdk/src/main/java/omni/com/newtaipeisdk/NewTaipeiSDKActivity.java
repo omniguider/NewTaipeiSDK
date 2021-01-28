@@ -269,6 +269,8 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
     public void onPause() {
         super.onPause();
         isResumed = false;
+
+        finish();
     }
 
     @Override

@@ -35,6 +35,8 @@ public class NewTaipeiSDKApi {
                                       @Field("username") String username,
                                       @Field("idcount") String idcount,
                                       @Field("hwid") String hwid,
+                                      @Field("device_id") String device_id,
+                                      @Field("plateform") String plateform,
                                       @Field("timestamp") String timestamp,
                                       @Field("mac") String mac);
 
@@ -66,14 +68,16 @@ public class NewTaipeiSDKApi {
                           String hwid, NetworkManager.NetworkManagerListener<ClockResponse> listener) {
 
         DialogTools.getInstance().showProgress(activity);
-        Log.e("NTS","status"+status);
-        Log.e("NTS","username"+username);
-        Log.e("NTS","idcount"+idcount);
-        Log.e("NTS","hwid"+hwid);
+        Log.e("NTS", "status" + status);
+        Log.e("NTS", "username" + username);
+        Log.e("NTS", "idcount" + idcount);
+        Log.e("NTS", "hwid" + hwid);
         long currentTimestamp = System.currentTimeMillis() / 1000L;
         String mac = NetworkManager.getInstance().getMacStr(currentTimestamp);
         Call<ClockResponse> call = getClockService().setRecord(
-                status, username, idcount, hwid, currentTimestamp + "", mac);
+                status, username, idcount, hwid,
+                NetworkManager.getInstance().getDeviceId(activity), "2",
+                currentTimestamp + "", mac);
 
         NetworkManager.getInstance().addPostRequest(activity, call, ClockResponse.class, listener);
     }
