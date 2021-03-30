@@ -2,7 +2,7 @@
 
     <string name="app_name">NewTaipeiSDK</string>
     <string name="punch_time_service">按刷卡服務</string>
-    <string name="query_the_records">記錄查詢</string>
+    <string name="query_the_records">紀錄查詢</string>
     <string name="current_time">現在時刻</string>
     <string name="on_duty">上班</string>
     <string name="off_duty">下班</string>

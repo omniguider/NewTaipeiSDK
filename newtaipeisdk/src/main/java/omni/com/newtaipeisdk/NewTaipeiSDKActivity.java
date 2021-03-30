@@ -118,13 +118,15 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
         String realUid = Decrypt(rawUid, keyBytes, ivBytes);
         Log.e(TAG, "realUid" + realUid);
 
-        for (BeaconInfoData beaconInfoData : mBeaconInfoData) {
-            if (beaconInfoData.getHWID().equals(realUid) && beaconInfoData.getClockEnabled().equals("Y")) {
-                isClockBeacon = true;
-                randomLevel = beaconInfoData.getUPDTE_RATE();
-                NLPI_BEACON_ID_LIST.add(realUid);
-                lastScanTime = Calendar.getInstance().getTime().getTime();
-                break;
+        if (mBeaconInfoData != null) {
+            for (BeaconInfoData beaconInfoData : mBeaconInfoData) {
+                if (beaconInfoData.getHWID().equals(realUid) && beaconInfoData.getClockEnabled().equals("Y")) {
+                    isClockBeacon = true;
+                    randomLevel = beaconInfoData.getUPDTE_RATE();
+                    NLPI_BEACON_ID_LIST.add(realUid);
+                    lastScanTime = Calendar.getInstance().getTime().getTime();
+                    break;
+                }
             }
         }
         if (isClockBeacon && !isActive) {

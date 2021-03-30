@@ -113,7 +113,6 @@ public class NewTaipeiSDKApi {
         long currentTimestamp = System.currentTimeMillis() / 1000L;
         String mac = NetworkManager.getInstance().getMacStr(currentTimestamp);
         Call<BeaconInfoData[]> call = getClockService().getBeaconInfo(currentTimestamp + "", mac);
-
         NetworkManager.getInstance().addPostRequest(activity, call, BeaconInfoData[].class, listener);
     }
 }

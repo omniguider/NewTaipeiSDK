@@ -17,13 +17,14 @@
     <application
         android:allowBackup="true"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true">
 
         <activity
             android:name=".NewTaipeiSDKActivity"
             android:launchMode="singleTop"
-            android:theme="@style/NTSDKTheme"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/NTSDKTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
