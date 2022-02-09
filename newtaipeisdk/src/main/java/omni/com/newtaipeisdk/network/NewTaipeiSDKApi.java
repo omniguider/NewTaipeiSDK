@@ -2,7 +2,9 @@ package omni.com.newtaipeisdk.network;
 
 import android.app.Activity;
 import android.util.Log;
+import android.widget.Toast;
 
+import omni.com.newtaipeisdk.NewTaipeiSDKActivity;
 import omni.com.newtaipeisdk.model.BeaconInfoData;
 import omni.com.newtaipeisdk.model.ClockResponse;
 import omni.com.newtaipeisdk.model.CommonArrayResponse;
@@ -112,6 +114,8 @@ public class NewTaipeiSDKApi {
 
         long currentTimestamp = System.currentTimeMillis() / 1000L;
         String mac = NetworkManager.getInstance().getMacStr(currentTimestamp);
+        Log.e("LOG", "timestamp" + currentTimestamp);
+        Log.e("LOG", "mac" + mac);
         Call<BeaconInfoData[]> call = getClockService().getBeaconInfo(currentTimestamp + "", mac);
         NetworkManager.getInstance().addPostRequest(activity, call, BeaconInfoData[].class, listener);
     }

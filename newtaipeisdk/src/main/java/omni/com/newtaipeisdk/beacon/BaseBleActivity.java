@@ -81,6 +81,13 @@ public abstract class BaseBleActivity extends AppCompatActivity implements Beaco
     Boolean findBeaconFlag = false;
     List<M4BeaconWithCounter> findBeacons = new ArrayList<M4BeaconWithCounter>();
 
+    public static int beaconSize;
+    public static String realUid;
+    public static String namespaceId;
+    public static String shortName;
+    public static String majorId;
+    public static String minorId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -163,6 +170,8 @@ public abstract class BaseBleActivity extends AppCompatActivity implements Beaco
 
             }
         }
+
+        beaconSize = beacons.size();
         Log.i(TAG, "Have Found bacons total of = " + beacons.size() + " but ours proxiimity beacon no= " + tmpfindBeacons.size());
         if (findBeaconFlag) {
 
@@ -172,6 +181,11 @@ public abstract class BaseBleActivity extends AppCompatActivity implements Beaco
                 Identifier majorId = beacon.getId2(); //major
                 Identifier minorId = beacon.getId3(); //minor
                 String shortName = beacon.getBluetoothName();
+
+                this.namespaceId = beacon.getId1().toString();
+                this.majorId = beacon.getId2().toString();
+                this.minorId = beacon.getId3().toString();
+                this.shortName = beacon.getBluetoothName();
                 Log.i(TAG, "I see a beacon transmitting namespace id: " + namespaceId + " name:" + shortName +
                         " and major id: " + majorId + " and minor id: " + minorId +
                         " approximately " + beacon.getDistance() + " meters away.");
@@ -188,11 +202,11 @@ public abstract class BaseBleActivity extends AppCompatActivity implements Beaco
                 Log.i(TAG, "rawUid=" + rawUid);
                 M4Beacon m4Beacon = new M4Beacon(ProximityUUID, majorId.toInt(), minorId.toInt(), beacon.getTxPower(), beacon.getRssi(), beacon.getDataFields().get(0).intValue());
 
-                if (!shortName.isEmpty()) {
+                if (shortName != null && !shortName.isEmpty()) {
                     m4Beacon.setShortName(shortName);
                 }
 
-                final String realUid = onDecryptBeacon(rawUid);
+                realUid = onDecryptBeacon(rawUid);
                 if (realUid.isEmpty()) { //may not work
                     m4Beacon.setUid(beacon.getBluetoothAddress(), beacon.getBluetoothAddress());
                 } else {
@@ -209,6 +223,7 @@ public abstract class BaseBleActivity extends AppCompatActivity implements Beaco
                 Log.v(TAG, "realUid " + realUid);
                 Log.v(TAG, "randomNum " + randomNum);
                 Log.v(TAG, "randomLevel " + randomLevel);
+                Log.v(TAG, "getBattery " + m4Beacon.getBattery());
                 if (!NewTaipeiSDKActivity.mLastSendBatteryId.equals(realUid) && NLPI_BEACON_ID_LIST.contains(realUid) && randomNum < randomLevel) {
                     Log.v(TAG, "setBeaconBatteryLevel holden");
                     NewTaipeiSDKApi.getInstance().setBeaconBatteryLevel(BaseBleActivity.this,

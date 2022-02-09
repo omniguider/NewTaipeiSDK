@@ -19,6 +19,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -101,11 +102,19 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
     private boolean isClockBeacon = false;
     public static int randomLevel = 1;
 
+    private TextView decrypt_TV;
+
     @Override
     public void onReceivedBeacon(List<M4BeaconWithCounter> resultBeacons) {
         Log.e(TAG, "onReceivedBeacon");
         currentBeacons.clear();
         currentBeacons.addAll(resultBeacons);
+
+        decrypt_TV.setText("Have Found bacons total of = " + beaconSize +
+                "\nI see a beacon transmitting\nnamespace id: "
+                + namespaceId + "\nname:" + shortName +
+                "\nand major id: " + majorId + "\nand minor id: " + minorId +
+                "\nisClockBeacon：" + isClockBeacon + "\nrealUid：" + realUid);
     }
 
     @Override
@@ -118,6 +127,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
         String realUid = Decrypt(rawUid, keyBytes, ivBytes);
         Log.e(TAG, "realUid" + realUid);
 
+        isClockBeacon = false;
         if (mBeaconInfoData != null) {
             for (BeaconInfoData beaconInfoData : mBeaconInfoData) {
                 if (beaconInfoData.getHWID().equals(realUid) && beaconInfoData.getClockEnabled().equals("Y")) {
@@ -129,6 +139,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
                 }
             }
         }
+
         if (isClockBeacon && !isActive) {
             hwid = realUid;
             isActive = true;
@@ -168,10 +179,13 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
             @Override
             public void onSucceed(BeaconInfoData[] beaconInfoData) {
                 mBeaconInfoData = beaconInfoData;
+//                Toast.makeText(NewTaipeiSDKActivity.this,
+//                        "mBeaconInfoData size is : " + mBeaconInfoData.length, Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onFail(String errorMsg, boolean shouldRetry) {
+//                Toast.makeText(NewTaipeiSDKActivity.this, errorMsg, Toast.LENGTH_LONG).show();
             }
         });
 
@@ -191,6 +205,8 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
         punch_time_service_TV = findViewById(R.id.ntsdk_activity_main_tv_punch_time_service);
         query_the_records_TV = findViewById(R.id.ntsdk_activity_main_tv_query_the_records);
         outside_range_TV = findViewById(R.id.ntsdk_activity_main_tv_outside_range);
+
+        decrypt_TV = findViewById(R.id.ntsdk_activity_main_decrypt_tv);
 
         query_the_records_TV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -380,7 +396,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
 
     @Override
     public void onLeScan(final BluetoothDevice device, int i, byte[] scanRecord) {
-
+        Log.e(TAG, "onLeScan");
 //        BatteryPowerData BP = BatteryPowerData.generateBatteryBeacon(scanRecord);
 //
 //        if (BP != null && BP.BatteryUuid.toUpperCase().startsWith("00112233-4455-6677-8899-AABBCCDDEEFF")) {
@@ -424,6 +440,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
             Log.d(TAG, "name:" + devName + ",User id:" + omniguiderData.userID + ",HW id:" + omniguiderData.hwID + ",TimeStamp:" + omniguiderData.TimeStamp
                     + ",Stamp:" + omniguiderData.Stamp + ",voltage:" + omniguiderData.voltage + " V\n");
 
+            isClockBeacon = false;
             for (BeaconInfoData beaconInfoData : mBeaconInfoData) {
                 if (beaconInfoData.getHWID().equals(omniguiderData.hwID) && beaconInfoData.getClockEnabled().equals("Y")) {
                     isClockBeacon = true;
