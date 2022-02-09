@@ -71,6 +71,16 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/ntsdk_activity_main_decrypt_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
+    <TextView
         android:id="@+id/ntsdk_activity_main_tv_outside_range"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -79,7 +89,7 @@
         android:gravity="center"
         android:text="@string/error_dialog_message_text_outside_range"
         android:textColor="@android:color/holo_red_light"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
 </FrameLayout>
