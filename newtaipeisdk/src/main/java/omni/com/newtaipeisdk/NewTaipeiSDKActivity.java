@@ -44,9 +44,11 @@ import omni.com.newtaipeisdk.beacon.BaseBleActivity;
 import omni.com.newtaipeisdk.beacon.M4Beacon;
 import omni.com.newtaipeisdk.beacon.M4BeaconWithCounter;
 import omni.com.newtaipeisdk.model.BeaconInfoData;
+import omni.com.newtaipeisdk.model.PermissionResponse;
 import omni.com.newtaipeisdk.model.SendBeaconBatteryResponse;
 import omni.com.newtaipeisdk.network.NetworkManager;
 import omni.com.newtaipeisdk.network.NewTaipeiSDKApi;
+import omni.com.newtaipeisdk.tool.DialogTools;
 
 import static com.m4grid.lib.m4Beacon.RawDevice.Decrypt;
 
@@ -100,6 +102,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
 
     private BeaconInfoData[] mBeaconInfoData;
     private boolean isClockBeacon = false;
+    private boolean userPermission = false;
     public static int randomLevel = 1;
 
     private TextView decrypt_TV;
@@ -140,7 +143,8 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
             }
         }
 
-        if (isClockBeacon && !isActive) {
+        Log.e(TAG, "userPermission" + userPermission);
+        if (isClockBeacon && !isActive && userPermission) {
             hwid = realUid;
             isActive = true;
             outside_range_TV.setVisibility(View.GONE);
@@ -175,19 +179,36 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
 //            NLPI_BEACON_ID_LIST.add(String.valueOf(i));
 //        }
 
-        NewTaipeiSDKApi.getInstance().getBeaconInfo(this, new NetworkManager.NetworkManagerListener<BeaconInfoData[]>() {
-            @Override
-            public void onSucceed(BeaconInfoData[] beaconInfoData) {
-                mBeaconInfoData = beaconInfoData;
+        NewTaipeiSDKApi.getInstance().checkEnabled(this, userid,
+                new NetworkManager.NetworkManagerListener<PermissionResponse>() {
+                    @Override
+                    public void onSucceed(PermissionResponse response) {
+                        if (response.getResult())
+                            userPermission = true;
+                        else
+                            DialogTools.getInstance().showErrorMessage(NewTaipeiSDKActivity.this,
+                                    R.string.important_message, response.getMessage());
+                    }
+
+                    @Override
+                    public void onFail(String errorMsg, boolean shouldRetry) {
+                    }
+                });
+
+        NewTaipeiSDKApi.getInstance().getBeaconInfo(this, userid,
+                new NetworkManager.NetworkManagerListener<BeaconInfoData[]>() {
+                    @Override
+                    public void onSucceed(BeaconInfoData[] beaconInfoData) {
+                        mBeaconInfoData = beaconInfoData;
 //                Toast.makeText(NewTaipeiSDKActivity.this,
 //                        "mBeaconInfoData size is : " + mBeaconInfoData.length, Toast.LENGTH_LONG).show();
-            }
+                    }
 
-            @Override
-            public void onFail(String errorMsg, boolean shouldRetry) {
+                    @Override
+                    public void onFail(String errorMsg, boolean shouldRetry) {
 //                Toast.makeText(NewTaipeiSDKActivity.this, errorMsg, Toast.LENGTH_LONG).show();
-            }
-        });
+                    }
+                });
 
         findViewById(R.id.ntsdk_activity_main_fl_back).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -441,15 +462,17 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
                     + ",Stamp:" + omniguiderData.Stamp + ",voltage:" + omniguiderData.voltage + " V\n");
 
             isClockBeacon = false;
-            for (BeaconInfoData beaconInfoData : mBeaconInfoData) {
-                if (beaconInfoData.getHWID().equals(omniguiderData.hwID) && beaconInfoData.getClockEnabled().equals("Y")) {
-                    isClockBeacon = true;
-                    randomLevel = beaconInfoData.getUPDTE_RATE();
-                    break;
+            if (mBeaconInfoData != null) {
+                for (BeaconInfoData beaconInfoData : mBeaconInfoData) {
+                    if (beaconInfoData.getHWID().equals(omniguiderData.hwID) && beaconInfoData.getClockEnabled().equals("Y")) {
+                        isClockBeacon = true;
+                        randomLevel = beaconInfoData.getUPDTE_RATE();
+                        break;
+                    }
                 }
             }
 //            if (NLPI_BEACON_ID_LIST.contains(omniguiderData.hwID) && bluetoothAdapter.isEnabled()) {
-            if (isClockBeacon && bluetoothAdapter.isEnabled()) {
+            if (isClockBeacon && bluetoothAdapter.isEnabled() && userPermission) {
                 hwid = omniguiderData.hwID;
                 outside_range_TV.setVisibility(View.GONE);
                 punch_time_service_TV.setBackgroundResource(R.mipmap.btn_bg_yellow_m);

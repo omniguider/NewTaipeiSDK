@@ -37,6 +37,15 @@ public class ServiceFragment extends Fragment {
     final int PUNCH_TIME_OUT = 600000;
     private SharedPreferences settings = null;
 
+    public static final String KEY_LAST_PUNCH_TIME_ON_DUTY = "key_last_punch_time_on_duty";
+    public static final String KEY_LAST_PUNCH_TIME_OFF_DUTY = "key_last_punch_time_off_duty";
+    public static final String KEY_LAST_PUNCH_TIME_GO_OUT = "key_last_punch_time_go_out";
+    public static final String KEY_LAST_PUNCH_TIME_COME_BACK = "key_last_punch_time_come_back";
+    public static final String KEY_LAST_PUNCH_TIME_ON_DUTY_OVERTIME = "key_last_punch_time_on_duty_overtime";
+    public static final String KEY_LAST_PUNCH_TIME_OFF_DUTY_OVERTIME = "key_last_punch_time_off_duty_overtime";
+    public static final String KEY_LAST_PUNCH_TIME_FOR_TESTING = "key_last_punch_time_for_testing";
+
+
     public static ServiceFragment newInstance() {
         Bundle args = new Bundle();
         ServiceFragment fragment = new ServiceFragment();
@@ -139,7 +148,27 @@ public class ServiceFragment extends Fragment {
 
         currentTime = Calendar.getInstance().getTime().getTime();
         settings = getActivity().getSharedPreferences(NewTaipeiSDKActivity.TAG, 0);
-        Long lastPunchTime = settings.getLong("lastPunchTime", 0);
+        Long lastPunchTime = 0L;
+        switch (status) {
+            case "1":
+                lastPunchTime = settings.getLong(KEY_LAST_PUNCH_TIME_ON_DUTY, 0);
+                break;
+            case "2":
+                lastPunchTime = settings.getLong(KEY_LAST_PUNCH_TIME_OFF_DUTY, 0);
+                break;
+            case "3":
+                lastPunchTime = settings.getLong(KEY_LAST_PUNCH_TIME_GO_OUT, 0);
+                break;
+            case "4":
+                lastPunchTime = settings.getLong(KEY_LAST_PUNCH_TIME_COME_BACK, 0);
+                break;
+            case "5":
+                lastPunchTime = settings.getLong(KEY_LAST_PUNCH_TIME_ON_DUTY_OVERTIME, 0);
+                break;
+            case "6":
+                lastPunchTime = settings.getLong(KEY_LAST_PUNCH_TIME_OFF_DUTY_OVERTIME, 0);
+                break;
+        }
         if (currentTime - lastPunchTime < PUNCH_TIME_OUT && !status.equals(FOR_TESTING)) {
             showErrorMessage(getString(R.string.error_dialog_message_text_ten_minutes));
             getActivity().getSupportFragmentManager().popBackStack();
@@ -156,7 +185,26 @@ public class ServiceFragment extends Fragment {
                             } else {
                                 if (!status.equals(FOR_TESTING)) {
                                     SharedPreferences.Editor editor = settings.edit();
-                                    editor.putLong("lastPunchTime", Calendar.getInstance().getTime().getTime());
+                                    switch (status) {
+                                        case "1":
+                                            editor.putLong(KEY_LAST_PUNCH_TIME_ON_DUTY, Calendar.getInstance().getTime().getTime());
+                                            break;
+                                        case "2":
+                                            editor.putLong(KEY_LAST_PUNCH_TIME_OFF_DUTY, Calendar.getInstance().getTime().getTime());
+                                            break;
+                                        case "3":
+                                            editor.putLong(KEY_LAST_PUNCH_TIME_GO_OUT, Calendar.getInstance().getTime().getTime());
+                                            break;
+                                        case "4":
+                                            editor.putLong(KEY_LAST_PUNCH_TIME_COME_BACK, Calendar.getInstance().getTime().getTime());
+                                            break;
+                                        case "5":
+                                            editor.putLong(KEY_LAST_PUNCH_TIME_ON_DUTY_OVERTIME, Calendar.getInstance().getTime().getTime());
+                                            break;
+                                        case "6":
+                                            editor.putLong(KEY_LAST_PUNCH_TIME_OFF_DUTY_OVERTIME, Calendar.getInstance().getTime().getTime());
+                                            break;
+                                    }
                                     editor.commit();
                                 }
 

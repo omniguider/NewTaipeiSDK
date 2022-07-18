@@ -30,6 +30,7 @@
     <string name="error_dialog_message_text_no_network">請檢查網路連線</string>
     <string name="dialog_button_ok_text">確定</string>
     <string name="error">錯誤</string>
+    <string name="important_message">重要訊息</string>
     <string name="error_dialog_title_text_unknown">發生未預期錯誤</string>
     <string name="dialog_message_network_connect_not_good">此處無可供服務流量之網路，請移動至適當區域，檢查連線狀況後再試。</string>
     <string name="hint_input_correct_date">請輸入正確的日期</string>
@@ -39,6 +40,7 @@
     <string name="error_dialog_message_text_system_time">請將手機時間改為自動設定</string>
     <string name="error_dialog_message_text_outside_range">您的位置不在刷卡範圍</string>
     <string name="error_dialog_message_text_outside_domain">請連接指定的網路連線</string>
-    <string name="error_dialog_message_text_ten_minutes">10分鐘內不能再打卡</string>
+    <string name="error_dialog_message_text_ten_minutes">同一卡別10分鐘內不可以再按刷卡</string>
+    <string name="hint_personal">請以<font color="#ff4444">本人</font>之手機及帳號按卡上下班\n以避免觸犯相關規定</string>
 
 </resources>

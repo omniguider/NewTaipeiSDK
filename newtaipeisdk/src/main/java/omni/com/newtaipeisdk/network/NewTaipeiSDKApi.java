@@ -2,12 +2,11 @@ package omni.com.newtaipeisdk.network;
 
 import android.app.Activity;
 import android.util.Log;
-import android.widget.Toast;
 
-import omni.com.newtaipeisdk.NewTaipeiSDKActivity;
 import omni.com.newtaipeisdk.model.BeaconInfoData;
 import omni.com.newtaipeisdk.model.ClockResponse;
 import omni.com.newtaipeisdk.model.CommonArrayResponse;
+import omni.com.newtaipeisdk.model.PermissionResponse;
 import omni.com.newtaipeisdk.model.RecordData;
 import omni.com.newtaipeisdk.model.SendBeaconBatteryResponse;
 import omni.com.newtaipeisdk.tool.DialogTools;
@@ -30,6 +29,9 @@ public class NewTaipeiSDKApi {
     }
 
     interface ClockService {
+
+        @GET("api/check_enabled")
+        Call<PermissionResponse> checkEnabled(@Query("idcount") String idcount);
 
         @FormUrlEncoded
         @POST("api/record")
@@ -58,12 +60,22 @@ public class NewTaipeiSDKApi {
                                                               @Field("mac") String mac);
 
         @GET("api/beacon")
-        Call<BeaconInfoData[]> getBeaconInfo(@Query("timestamp") String timestamp,
-                                             @Query("mac") String mac);
+        Call<CommonArrayResponse> getBeaconInfo(@Query("idcount") String idcount);
     }
 
     private ClockService getClockService() {
         return NetworkManager.getInstance().getRetrofit().create(ClockService.class);
+    }
+
+    public void checkEnabled(Activity activity, String idcount, NetworkManager.NetworkManagerListener<PermissionResponse> listener) {
+
+//        DialogTools.getInstance().showProgress(activity);
+        Log.e("NTS", "idcount" + idcount);
+        long currentTimestamp = System.currentTimeMillis() / 1000L;
+        String mac = NetworkManager.getInstance().getMacStr(currentTimestamp);
+        Call<PermissionResponse> call = getClockService().checkEnabled(idcount);
+
+        NetworkManager.getInstance().addPostRequest(activity, call, PermissionResponse.class, listener);
     }
 
     public void setRecord(Activity activity, String status, String username, String idcount,
@@ -78,8 +90,7 @@ public class NewTaipeiSDKApi {
         String mac = NetworkManager.getInstance().getMacStr(currentTimestamp);
         Call<ClockResponse> call = getClockService().setRecord(
                 status, username, idcount, hwid,
-                NetworkManager.getInstance().getDeviceId(activity), "2",
-                currentTimestamp + "", mac);
+                NetworkManager.getInstance().getDeviceId(activity), "2", currentTimestamp + "", mac);
 
         NetworkManager.getInstance().addPostRequest(activity, call, ClockResponse.class, listener);
     }
@@ -110,13 +121,13 @@ public class NewTaipeiSDKApi {
         NetworkManager.getInstance().addPostRequest(activity, call, SendBeaconBatteryResponse.class, listener);
     }
 
-    public void getBeaconInfo(Activity activity, NetworkManager.NetworkManagerListener<BeaconInfoData[]> listener) {
+    public void getBeaconInfo(Activity activity, String idcount, NetworkManager.NetworkManagerListener<BeaconInfoData[]> listener) {
 
         long currentTimestamp = System.currentTimeMillis() / 1000L;
         String mac = NetworkManager.getInstance().getMacStr(currentTimestamp);
         Log.e("LOG", "timestamp" + currentTimestamp);
         Log.e("LOG", "mac" + mac);
-        Call<BeaconInfoData[]> call = getClockService().getBeaconInfo(currentTimestamp + "", mac);
-        NetworkManager.getInstance().addPostRequest(activity, call, BeaconInfoData[].class, listener);
+        Call<CommonArrayResponse> call = getClockService().getBeaconInfo(idcount);
+        NetworkManager.getInstance().addPostRequestToCommonArrayObj(activity, call, BeaconInfoData[].class, listener);
     }
 }
