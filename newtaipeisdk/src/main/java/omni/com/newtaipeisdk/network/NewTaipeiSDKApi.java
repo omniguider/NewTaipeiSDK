@@ -6,6 +6,7 @@ import android.util.Log;
 import omni.com.newtaipeisdk.model.BeaconInfoData;
 import omni.com.newtaipeisdk.model.ClockResponse;
 import omni.com.newtaipeisdk.model.CommonArrayResponse;
+import omni.com.newtaipeisdk.model.MessageResponse;
 import omni.com.newtaipeisdk.model.PermissionResponse;
 import omni.com.newtaipeisdk.model.RecordData;
 import omni.com.newtaipeisdk.model.SendBeaconBatteryResponse;
@@ -61,6 +62,9 @@ public class NewTaipeiSDKApi {
 
         @GET("api/beacon")
         Call<CommonArrayResponse> getBeaconInfo(@Query("idcount") String idcount);
+
+        @GET("api/get_message")
+        Call<MessageResponse> getMessage();
     }
 
     private ClockService getClockService() {
@@ -129,5 +133,11 @@ public class NewTaipeiSDKApi {
         Log.e("LOG", "mac" + mac);
         Call<CommonArrayResponse> call = getClockService().getBeaconInfo(idcount);
         NetworkManager.getInstance().addPostRequestToCommonArrayObj(activity, call, BeaconInfoData[].class, listener);
+    }
+
+    public void getMessage(Activity activity, NetworkManager.NetworkManagerListener<MessageResponse> listener) {
+
+        Call<MessageResponse> call = getClockService().getMessage();
+        NetworkManager.getInstance().addPostRequest(activity, call, MessageResponse.class, listener);
     }
 }

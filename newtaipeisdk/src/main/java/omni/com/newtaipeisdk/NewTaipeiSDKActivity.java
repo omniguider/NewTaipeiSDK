@@ -44,6 +44,7 @@ import omni.com.newtaipeisdk.beacon.BaseBleActivity;
 import omni.com.newtaipeisdk.beacon.M4Beacon;
 import omni.com.newtaipeisdk.beacon.M4BeaconWithCounter;
 import omni.com.newtaipeisdk.model.BeaconInfoData;
+import omni.com.newtaipeisdk.model.MessageResponse;
 import omni.com.newtaipeisdk.model.PermissionResponse;
 import omni.com.newtaipeisdk.model.SendBeaconBatteryResponse;
 import omni.com.newtaipeisdk.network.NetworkManager;
@@ -85,6 +86,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
     private TextView punch_time_service_TV;
     private TextView query_the_records_TV;
     private TextView outside_range_TV;
+    private TextView message_TV;
     private String ARG_KEY_USERNAME = "arg_key_username";
     private String ARG_KEY_USERID = "arg_key_userid";
     private String mLastSendBatteryMac;
@@ -179,6 +181,20 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
 //            NLPI_BEACON_ID_LIST.add(String.valueOf(i));
 //        }
 
+        findViewById(R.id.ntsdk_activity_main_fl_back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        punch_time_service_TV = findViewById(R.id.ntsdk_activity_main_tv_punch_time_service);
+        query_the_records_TV = findViewById(R.id.ntsdk_activity_main_tv_query_the_records);
+        outside_range_TV = findViewById(R.id.ntsdk_activity_main_tv_outside_range);
+        message_TV = findViewById(R.id.ntsdk_activity_main_tv_message);
+        decrypt_TV = findViewById(R.id.ntsdk_activity_main_decrypt_tv);
+
+
         NewTaipeiSDKApi.getInstance().checkEnabled(this, userid,
                 new NetworkManager.NetworkManagerListener<PermissionResponse>() {
                     @Override
@@ -210,24 +226,25 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
                     }
                 });
 
-        findViewById(R.id.ntsdk_activity_main_fl_back).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        NewTaipeiSDKApi.getInstance().getMessage(this,
+                new NetworkManager.NetworkManagerListener<MessageResponse>() {
+                    @Override
+                    public void onSucceed(MessageResponse response) {
+                        if (response.getResult().equals("success")) {
+                            message_TV.setText(response.getData());
+                        }
+                    }
+
+                    @Override
+                    public void onFail(String errorMsg, boolean shouldRetry) {
+                    }
+                });
 
         mBeaconManager = BeaconManager.getInstanceForApplication(this);
         mBeaconManager.setAndroidLScanningDisabled(true);
         mBeaconManager.setRssiFilterImplClass(ArmaRssiFilter.class);
         mBeaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout(BEACON_LAYOUT));
         mBeaconManager.bind(this);
-
-        punch_time_service_TV = findViewById(R.id.ntsdk_activity_main_tv_punch_time_service);
-        query_the_records_TV = findViewById(R.id.ntsdk_activity_main_tv_query_the_records);
-        outside_range_TV = findViewById(R.id.ntsdk_activity_main_tv_outside_range);
-
-        decrypt_TV = findViewById(R.id.ntsdk_activity_main_decrypt_tv);
 
         query_the_records_TV.setOnClickListener(new View.OnClickListener() {
             @Override

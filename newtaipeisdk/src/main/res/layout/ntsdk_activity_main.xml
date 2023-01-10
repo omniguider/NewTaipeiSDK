@@ -86,7 +86,7 @@
         android:layout_gravity="center|bottom"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="120dp"
+        android:layout_marginBottom="96dp"
         android:background="@drawable/solid_round_rectangle_white"
         android:gravity="center"
         android:padding="16dp"
@@ -104,6 +104,18 @@
         android:gravity="center"
         android:text="@string/error_dialog_message_text_outside_range"
         android:textColor="@android:color/holo_red_light"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/ntsdk_activity_main_tv_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:gravity="start"
+        android:textColor="@android:color/black"
         android:textSize="20sp"
         android:textStyle="bold" />
 
