@@ -1,22 +1,35 @@
 package omni.com.newtaipeisdk;
 
+import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.BEACON_LIST;
+import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.beaconName;
+import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.beaconSelect;
+import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.byHand;
+import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.hwid;
+import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.selectPos;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Calendar;
 
+import omni.com.newtaipeisdk.model.BeaconInfoData;
 import omni.com.newtaipeisdk.model.ClockResponse;
 import omni.com.newtaipeisdk.network.NetworkManager;
 import omni.com.newtaipeisdk.network.NewTaipeiSDKApi;
@@ -36,6 +49,9 @@ public class ServiceFragment extends Fragment {
     private Long currentTime = 0L;
     final int PUNCH_TIME_OUT = 600000;
     private SharedPreferences settings = null;
+    private RecyclerView beaconList;
+    private BeaconListAdapter beaconListAdapter;
+    private TextView favoriteTV;
 
     public static final String KEY_LAST_PUNCH_TIME_ON_DUTY = "key_last_punch_time_on_duty";
     public static final String KEY_LAST_PUNCH_TIME_OFF_DUTY = "key_last_punch_time_off_duty";
@@ -44,7 +60,39 @@ public class ServiceFragment extends Fragment {
     public static final String KEY_LAST_PUNCH_TIME_ON_DUTY_OVERTIME = "key_last_punch_time_on_duty_overtime";
     public static final String KEY_LAST_PUNCH_TIME_OFF_DUTY_OVERTIME = "key_last_punch_time_off_duty_overtime";
     public static final String KEY_LAST_PUNCH_TIME_FOR_TESTING = "key_last_punch_time_for_testing";
+    public static final String KEY_FAVORITE_BEACON_HWID = "key_favorite_beacon_hwid";
 
+    private String favId = "";
+    private int cnt = 0;
+    private Handler mTimeHandler;
+    private final Runnable mTimeRunner = new Runnable() {
+        @Override
+        public void run() {
+            if (cnt == 5) {
+                beaconSelect = false;
+                BEACON_LIST.clear();
+                cnt = 0;
+            } else
+                cnt++;
+
+            if (!beaconSelect) {
+                if (!BEACON_LIST.isEmpty())
+                    hwid = BEACON_LIST.get(0).getHWID();
+
+                for (BeaconInfoData data : BEACON_LIST) {
+                    if (data.getHWID().equals(favId)) {
+                        hwid = favId;
+                        beaconSelect = true;
+                        byHand = false;
+                        break;
+                    }
+                }
+            }
+            beaconListAdapter.notifyDataSetChanged();
+
+            mTimeHandler.postDelayed(mTimeRunner, 1000);
+        }
+    };
 
     public static ServiceFragment newInstance() {
         Bundle args = new Bundle();
@@ -56,6 +104,15 @@ public class ServiceFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mTimeHandler.removeCallbacks(mTimeRunner);
+        BEACON_LIST.clear();
+        selectPos = -1;
+        beaconSelect = false;
     }
 
     @Override
@@ -139,6 +196,37 @@ public class ServiceFragment extends Fragment {
                             NewTaipeiSDKActivity.hwid, getString(R.string.for_testing_time));
                 }
             });
+
+            favoriteTV = mView.findViewById(R.id.favorite);
+            favoriteTV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putString(KEY_FAVORITE_BEACON_HWID, NewTaipeiSDKActivity.hwid);
+                    editor.commit();
+                    favId = settings.getString(KEY_FAVORITE_BEACON_HWID, "");
+
+                    showSuccessMessage("提示", beaconName + " 已設為最愛");
+                }
+            });
+
+            settings = getActivity().getSharedPreferences(NewTaipeiSDKActivity.TAG, 0);
+            if (settings.getString(KEY_FAVORITE_BEACON_HWID, "") != null)
+                favId = settings.getString(KEY_FAVORITE_BEACON_HWID, "");
+
+            if (!BEACON_LIST.isEmpty())
+                hwid = BEACON_LIST.get(0).getHWID();
+
+            beaconList = mView.findViewById(R.id.beaconList);
+            beaconList.setLayoutManager(new LinearLayoutManager(requireActivity()));
+            beaconList.setItemAnimator(new DefaultItemAnimator());
+            beaconListAdapter = new BeaconListAdapter(requireActivity(), BEACON_LIST);
+            beaconList.setAdapter(beaconListAdapter);
+
+            if (mTimeHandler == null) {
+                mTimeHandler = new Handler();
+            }
+            mTimeHandler.postDelayed(mTimeRunner, 1000);
         }
         return mView;
     }

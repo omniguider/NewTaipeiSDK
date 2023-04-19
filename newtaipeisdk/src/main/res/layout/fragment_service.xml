@@ -60,27 +60,27 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:gravity="center"
             android:format24Hour="HH:mm"
+            android:gravity="center"
             android:text="9:41"
             android:textColor="@color/ntsdk_blue"
-            android:textSize="60dp"
+            android:textSize="48sp"
             tools:targetApi="jelly_bean_mr1" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
             android:background="@color/gray_a1" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
             android:orientation="horizontal">
 
             <TextView
@@ -89,14 +89,14 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
                 android:layout_weight="1"
                 android:background="@mipmap/btn_bg_yellow_s"
                 android:gravity="center"
                 android:text="@string/on_duty"
                 android:textColor="@android:color/white"
                 android:textSize="24dp"
-                android:textStyle="bold"
-                android:layout_marginRight="8dp" />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/fragment_service_tv_query_off_duty"
@@ -104,23 +104,23 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
                 android:layout_weight="1"
                 android:background="@mipmap/btn_bg_yellow_s"
                 android:gravity="center"
                 android:text="@string/off_duty"
                 android:textColor="@android:color/white"
                 android:textSize="24dp"
-                android:textStyle="bold"
-                android:layout_marginLeft="8dp" />
+                android:textStyle="bold" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
             android:orientation="horizontal">
 
             <TextView
@@ -129,14 +129,14 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
                 android:layout_weight="1"
                 android:background="@mipmap/btn_bg_green_s"
                 android:gravity="center"
                 android:text="@string/go_out"
                 android:textColor="@android:color/white"
                 android:textSize="24dp"
-                android:textStyle="bold"
-                android:layout_marginRight="8dp" />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/fragment_service_tv_come_back"
@@ -144,23 +144,23 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
                 android:layout_weight="1"
                 android:background="@mipmap/btn_bg_green_s"
                 android:gravity="center"
                 android:text="@string/come_back"
                 android:textColor="@android:color/white"
                 android:textSize="24dp"
-                android:textStyle="bold"
-                android:layout_marginLeft="8dp" />
+                android:textStyle="bold" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
             android:orientation="horizontal">
 
             <TextView
@@ -169,14 +169,14 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
                 android:layout_weight="1"
                 android:background="@mipmap/btn_bg_red_s"
                 android:gravity="center"
                 android:text="@string/on_duty_overtime"
                 android:textColor="@android:color/white"
                 android:textSize="24dp"
-                android:textStyle="bold"
-                android:layout_marginRight="8dp" />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/fragment_service_tv_off_duty_overtime"
@@ -184,23 +184,23 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
                 android:layout_weight="1"
                 android:background="@mipmap/btn_bg_red_s"
                 android:gravity="center"
                 android:text="@string/off_duty_overtime"
                 android:textColor="@android:color/white"
                 android:textSize="24dp"
-                android:textStyle="bold"
-                android:layout_marginLeft="8dp" />
+                android:textStyle="bold" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
             android:orientation="horizontal">
 
             <TextView
@@ -209,30 +209,71 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
                 android:layout_weight="1"
                 android:background="@mipmap/btn_bg_purple_s"
                 android:gravity="center"
                 android:text="@string/for_testing"
                 android:textColor="@android:color/white"
                 android:textSize="24dp"
-                android:textStyle="bold"
-                android:layout_marginRight="8dp" />
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/off_duty_overtime"
                 android:textColor="@color/gray_f3"
                 android:textSize="24dp"
-                android:textStyle="bold"
-                android:layout_marginLeft="8dp" />
+                android:textStyle="bold" />
 
         </LinearLayout>
 
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/select_position"
+                android:textColor="@color/ntsdk_blue"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/favorite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:background="@drawable/solid_round_rectangle_blue"
+                android:gravity="center"
+                android:paddingStart="16dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="4dp"
+                android:text="@string/favorite"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+
+        </FrameLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/beaconList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="16dp"
+            android:background="@android:color/white"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp" />
     </LinearLayout>
 
 </FrameLayout>

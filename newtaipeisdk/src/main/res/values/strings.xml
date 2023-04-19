@@ -43,4 +43,7 @@
     <string name="error_dialog_message_text_ten_minutes">同一卡別10分鐘內不可以再按刷卡</string>
     <string name="hint_personal">請以<font color="#ff4444">本人</font>之手機及帳號按卡上下班\n以避免觸犯相關規定</string>
 
+    <string name="select_position">選擇打卡位置</string>
+    <string name="favorite">設為最愛</string>
+
 </resources>

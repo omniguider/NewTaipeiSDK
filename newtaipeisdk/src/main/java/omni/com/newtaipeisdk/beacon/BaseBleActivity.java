@@ -34,7 +34,7 @@ import omni.com.newtaipeisdk.model.SendBeaconBatteryResponse;
 import omni.com.newtaipeisdk.network.NetworkManager;
 import omni.com.newtaipeisdk.network.NewTaipeiSDKApi;
 
-import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.NLPI_BEACON_ID_LIST;
+import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.BEACON_ID_LIST;
 import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.randomLevel;
 import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.randomNum;
 
@@ -224,7 +224,7 @@ public abstract class BaseBleActivity extends AppCompatActivity implements Beaco
                 Log.v(TAG, "randomNum " + randomNum);
                 Log.v(TAG, "randomLevel " + randomLevel);
                 Log.v(TAG, "getBattery " + m4Beacon.getBattery());
-                if (!NewTaipeiSDKActivity.mLastSendBatteryId.equals(realUid) && NLPI_BEACON_ID_LIST.contains(realUid) && randomNum < randomLevel) {
+                if (!NewTaipeiSDKActivity.mLastSendBatteryId.equals(realUid) && BEACON_ID_LIST.contains(realUid) && randomNum < randomLevel) {
                     Log.v(TAG, "setBeaconBatteryLevel holden");
                     NewTaipeiSDKApi.getInstance().setBeaconBatteryLevel(BaseBleActivity.this,
                             realUid,

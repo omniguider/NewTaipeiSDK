@@ -1,5 +1,7 @@
 package omni.com.newtaipeisdk;
 
+import static com.m4grid.lib.m4Beacon.RawDevice.Decrypt;
+
 import android.Manifest;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -19,7 +21,6 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -51,8 +52,6 @@ import omni.com.newtaipeisdk.network.NetworkManager;
 import omni.com.newtaipeisdk.network.NewTaipeiSDKApi;
 import omni.com.newtaipeisdk.tool.DialogTools;
 
-import static com.m4grid.lib.m4Beacon.RawDevice.Decrypt;
-
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsumer, BluetoothAdapter.LeScanCallback {
 
@@ -68,7 +67,8 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
     final List<String> NLPI_BEACON_MAJOR_LIST = new ArrayList<String>() {{
         add("7016");
     }};
-    public static final List<String> NLPI_BEACON_ID_LIST = new ArrayList<String>();
+    public static final List<String> BEACON_ID_LIST = new ArrayList<>();
+    public static final ArrayList<BeaconInfoData> BEACON_LIST = new ArrayList<>();
     public static final String BEACON_LAYOUT = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:29-29,i:34-39,i:40-41,i:46-47";
     private static final float beaconTrigger10 = 10f;
     private static final int beaconNum = 1620;
@@ -83,6 +83,10 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
     public static String major;
     public static String minor;
     public static String hwid;
+    public static int selectPos = -1;
+    public static String beaconName = "";
+    public static Boolean beaconSelect = false;
+    public static Boolean byHand = false;
     private TextView punch_time_service_TV;
     private TextView query_the_records_TV;
     private TextView outside_range_TV;
@@ -138,7 +142,9 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
                 if (beaconInfoData.getHWID().equals(realUid) && beaconInfoData.getClockEnabled().equals("Y")) {
                     isClockBeacon = true;
                     randomLevel = beaconInfoData.getUPDTE_RATE();
-                    NLPI_BEACON_ID_LIST.add(realUid);
+                    BEACON_ID_LIST.add(realUid);
+                    if (!BEACON_LIST.contains(beaconInfoData))
+                        BEACON_LIST.add(beaconInfoData);
                     lastScanTime = Calendar.getInstance().getTime().getTime();
                     break;
                 }
@@ -147,7 +153,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
 
         Log.e(TAG, "userPermission" + userPermission);
         if (isClockBeacon && !isActive && userPermission) {
-            hwid = realUid;
+//            hwid = realUid;
             isActive = true;
             outside_range_TV.setVisibility(View.GONE);
             punch_time_service_TV.setBackgroundResource(R.mipmap.btn_bg_yellow_m);
@@ -178,7 +184,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
         userid = getIntent().getStringExtra(ARG_KEY_USERID);
 
 //        for (int i = 1601; i <= beaconNum; i++) {
-//            NLPI_BEACON_ID_LIST.add(String.valueOf(i));
+//            BEACON_ID_LIST.add(String.valueOf(i));
 //        }
 
         findViewById(R.id.ntsdk_activity_main_fl_back).setOnClickListener(new View.OnClickListener() {
@@ -193,7 +199,6 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
         outside_range_TV = findViewById(R.id.ntsdk_activity_main_tv_outside_range);
         message_TV = findViewById(R.id.ntsdk_activity_main_tv_message);
         decrypt_TV = findViewById(R.id.ntsdk_activity_main_decrypt_tv);
-
 
         NewTaipeiSDKApi.getInstance().checkEnabled(this, userid,
                 new NetworkManager.NetworkManagerListener<PermissionResponse>() {
@@ -484,13 +489,15 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
                     if (beaconInfoData.getHWID().equals(omniguiderData.hwID) && beaconInfoData.getClockEnabled().equals("Y")) {
                         isClockBeacon = true;
                         randomLevel = beaconInfoData.getUPDTE_RATE();
+                        if (!BEACON_LIST.contains(beaconInfoData))
+                            BEACON_LIST.add(beaconInfoData);
                         break;
                     }
                 }
             }
-//            if (NLPI_BEACON_ID_LIST.contains(omniguiderData.hwID) && bluetoothAdapter.isEnabled()) {
+//            if (BEACON_ID_LIST.contains(omniguiderData.hwID) && bluetoothAdapter.isEnabled()) {
             if (isClockBeacon && bluetoothAdapter.isEnabled() && userPermission) {
-                hwid = omniguiderData.hwID;
+//                hwid = omniguiderData.hwID;
                 outside_range_TV.setVisibility(View.GONE);
                 punch_time_service_TV.setBackgroundResource(R.mipmap.btn_bg_yellow_m);
                 punch_time_service_TV.setOnClickListener(new View.OnClickListener() {
