@@ -1,8 +1,9 @@
 package omni.com.newtaipeisdk;
 
 import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.BEACON_LIST;
-import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.beaconName;
 import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.beaconSelect;
+import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.beaconName;
+import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.beaconInfoData;
 import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.byHand;
 import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.hwid;
 import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.selectPos;
@@ -68,9 +69,11 @@ public class ServiceFragment extends Fragment {
     private final Runnable mTimeRunner = new Runnable() {
         @Override
         public void run() {
-            if (cnt == 5) {
+            if (cnt >= 5) {
                 beaconSelect = false;
+                beaconInfoData = BEACON_LIST.get(BEACON_LIST.size() - 1);
                 BEACON_LIST.clear();
+                BEACON_LIST.add(beaconInfoData);
                 cnt = 0;
             } else
                 cnt++;
