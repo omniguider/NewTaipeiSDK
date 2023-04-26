@@ -144,8 +144,16 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
                     isClockBeacon = true;
                     randomLevel = beaconInfoData.getUPDTE_RATE();
                     BEACON_ID_LIST.add(realUid);
-                    if (!BEACON_LIST.contains(beaconInfoData))
-                        BEACON_LIST.add(beaconInfoData);
+                    boolean duplicate = false;
+                    if (!BEACON_LIST.contains(beaconInfoData)) {
+                        for (BeaconInfoData data : BEACON_LIST)
+                            if (data.getDESC().equals(beaconInfoData.getDESC())) {
+                                duplicate = true;
+                                break;
+                            }
+                        if (!duplicate)
+                            BEACON_LIST.add(beaconInfoData);
+                    }
                     lastScanTime = Calendar.getInstance().getTime().getTime();
                     break;
                 }
@@ -490,8 +498,16 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
                     if (beaconInfoData.getHWID().equals(omniguiderData.hwID) && beaconInfoData.getClockEnabled().equals("Y")) {
                         isClockBeacon = true;
                         randomLevel = beaconInfoData.getUPDTE_RATE();
-                        if (!BEACON_LIST.contains(beaconInfoData))
-                            BEACON_LIST.add(beaconInfoData);
+                        boolean duplicate = false;
+                        if (!BEACON_LIST.contains(beaconInfoData)) {
+                            for (BeaconInfoData data : BEACON_LIST)
+                                if (data.getDESC().equals(beaconInfoData.getDESC())) {
+                                    duplicate = true;
+                                    break;
+                                }
+                            if (!duplicate)
+                                BEACON_LIST.add(beaconInfoData);
+                        }
                         break;
                     }
                 }

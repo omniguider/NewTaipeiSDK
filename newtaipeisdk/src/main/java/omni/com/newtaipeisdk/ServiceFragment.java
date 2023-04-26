@@ -69,7 +69,7 @@ public class ServiceFragment extends Fragment {
     private final Runnable mTimeRunner = new Runnable() {
         @Override
         public void run() {
-            if (cnt >= 5) {
+            if (cnt == 5) {
                 beaconSelect = false;
                 beaconInfoData = BEACON_LIST.get(BEACON_LIST.size() - 1);
                 BEACON_LIST.clear();
@@ -91,6 +91,7 @@ public class ServiceFragment extends Fragment {
                     }
                 }
             }
+
             beaconListAdapter.notifyDataSetChanged();
 
             mTimeHandler.postDelayed(mTimeRunner, 1000);
