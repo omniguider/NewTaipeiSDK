@@ -18,7 +18,8 @@ public class DateTimePickerDialog extends AlertDialog implements OnClickListener
         super(context);
         mDateTimePicker = new DateTimePicker(context);
         setView(mDateTimePicker);
-        mYear = mDate.get(Calendar.YEAR) - 1911;
+//        mYear = mDate.get(Calendar.YEAR) - 1911;
+        mYear = mDate.get(Calendar.YEAR);
         mMouth = mDate.get(Calendar.MONTH) + 1;
         mDay = mDate.get(Calendar.DAY_OF_MONTH);
         mDateTimePicker.setOnDateTimeChangedListener(new DateTimePicker.OnDateTimeChangedListener() {

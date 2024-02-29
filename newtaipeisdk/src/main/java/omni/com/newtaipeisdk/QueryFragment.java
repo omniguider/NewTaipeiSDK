@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,11 +59,13 @@ public class QueryFragment extends Fragment {
                 }
             });
 
-            final String myFormat = "yyy/MM/dd";
+            final String myFormat = "yyyy/MM/dd";
             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.TAIWAN);
-            m_Calendar.set(Calendar.YEAR, m_Calendar.get(Calendar.YEAR) - 1911);
+//            m_Calendar.set(Calendar.YEAR, m_Calendar.get(Calendar.YEAR) - 1911);
             start_time_et = mView.findViewById(R.id.fragment_record_start_time_et);
-            start_time_et.setText(sdf.format(m_Calendar.getTime()));
+            start_time_et.setText(sdf.format(m_Calendar.getTime()).replace(
+                    sdf.format(m_Calendar.getTime()).substring(0, 4),
+                    Integer.parseInt(sdf.format(m_Calendar.getTime()).substring(0, 4)) - 1911+ ""));
             start_time_et.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -72,11 +75,12 @@ public class QueryFragment extends Fragment {
                             m_Calendar.set(Calendar.YEAR, year);
                             m_Calendar.set(Calendar.MONTH, month - 1);
                             m_Calendar.set(Calendar.DAY_OF_MONTH, day);
-                            String myFormat = "yyy/MM/dd";
+                            String myFormat = "yyyy/MM/dd";
                             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.TAIWAN);
-                            start_time_et.setText(sdf.format(m_Calendar.getTime()));
-                            start_time_ad = sdf.format(m_Calendar.getTime());
-                            m_Calendar.set(Calendar.YEAR, year + 1911);
+                            start_time_et.setText(sdf.format(m_Calendar.getTime()).replace(
+                                    sdf.format(m_Calendar.getTime()).substring(0, 4),
+                                    Integer.parseInt(sdf.format(m_Calendar.getTime()).substring(0, 4)) - 1911 + ""));
+//                            m_Calendar.set(Calendar.YEAR, year + 1911);
                             start_time_ad = sdf.format(m_Calendar.getTime());
                             startDate = m_Calendar.getTime().getTime();
                         }
@@ -86,7 +90,9 @@ public class QueryFragment extends Fragment {
             });
 
             end_time_et = mView.findViewById(R.id.fragment_record_end_time_et);
-            end_time_et.setText(sdf.format(m_Calendar.getTime()));
+            end_time_et.setText(sdf.format(m_Calendar.getTime()).replace(
+                    sdf.format(m_Calendar.getTime()).substring(0, 4),
+                    Integer.parseInt(sdf.format(m_Calendar.getTime()).substring(0, 4)) - 1911+ ""));
             end_time_et.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -96,10 +102,12 @@ public class QueryFragment extends Fragment {
                             m_Calendar.set(Calendar.YEAR, year);
                             m_Calendar.set(Calendar.MONTH, month - 1);
                             m_Calendar.set(Calendar.DAY_OF_MONTH, day);
-                            String myFormat = "yyy/MM/dd";
+                            String myFormat = "yyyy/MM/dd";
                             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.TAIWAN);
-                            end_time_et.setText(sdf.format(m_Calendar.getTime()));
-                            m_Calendar.set(Calendar.YEAR, year + 1911);
+                            end_time_et.setText(sdf.format(m_Calendar.getTime()).replace(
+                                    sdf.format(m_Calendar.getTime()).substring(0, 4),
+                                    Integer.parseInt(sdf.format(m_Calendar.getTime()).substring(0, 4)) - 1911 + ""));
+//                            m_Calendar.set(Calendar.YEAR, year + 1911);
                             end_time_ad = sdf.format(m_Calendar.getTime());
                             endDate = m_Calendar.getTime().getTime();
                         }
@@ -108,7 +116,7 @@ public class QueryFragment extends Fragment {
                 }
             });
 
-            m_Calendar.set(Calendar.YEAR, m_Calendar.get(Calendar.YEAR) + 1911);
+//            m_Calendar.set(Calendar.YEAR, m_Calendar.get(Calendar.YEAR) + 1911);
             start_time_ad = sdf.format(m_Calendar.getTime());
             end_time_ad = sdf.format(m_Calendar.getTime());
             startDate = m_Calendar.getTime().getTime();

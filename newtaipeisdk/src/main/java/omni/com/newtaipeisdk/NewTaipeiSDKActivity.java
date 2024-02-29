@@ -3,6 +3,7 @@ package omni.com.newtaipeisdk;
 import static com.m4grid.lib.m4Beacon.RawDevice.Decrypt;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -52,11 +53,11 @@ import omni.com.newtaipeisdk.network.NetworkManager;
 import omni.com.newtaipeisdk.network.NewTaipeiSDKApi;
 import omni.com.newtaipeisdk.tool.DialogTools;
 
-@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsumer, BluetoothAdapter.LeScanCallback {
 
     List<M4BeaconWithCounter> currentBeacons = new ArrayList<M4BeaconWithCounter>();
     public static String TAG = "NewTaipeiSDKActivity";
+    public static final int REQUEST_PERMISSIONS = 1;
     final int PUNCH_TIME_OUT = 10000;
     private BeaconManager mBeaconManager;
     private HandlerThread mBBHandlerThread;
@@ -277,12 +278,13 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
 
         checkLocationService();
         checkBluetoothOn();
-        startScanBeacon();
+//        startScanBeacon();
 
         mTimeoutHandlerThread = new HandlerThread("HandlerThread");
         mTimeoutHandlerThread.start();
         mTimeoutHandler = new Handler(mTimeoutHandlerThread.getLooper());
         mTimeoutHandler.postDelayed(new Runnable() {
+            @SuppressLint("MissingPermission")
             @Override
             public void run() {
                 currentTime = Calendar.getInstance().getTime().getTime();
@@ -322,7 +324,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
                     }
                 }
                 if (bluetoothAdapter.isEnabled() && !checkBluetooth) {
-                    startScanBeacon();
+//                    startScanBeacon();
                     checkBluetooth = true;
                     openBluetoothHint = false;
                 }
@@ -349,6 +351,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
         isResumed = true;
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -487,7 +490,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
             e.printStackTrace();
         }
 
-        String devName = device.getName();
+        @SuppressLint("MissingPermission") String devName = device.getName();
         if (omniguiderData != null && mBeaconInfoData != null) {
             Log.d(TAG, "name:" + devName + ",User id:" + omniguiderData.userID + ",HW id:" + omniguiderData.hwID + ",TimeStamp:" + omniguiderData.TimeStamp
                     + ",Stamp:" + omniguiderData.Stamp + ",voltage:" + omniguiderData.voltage + " V\n");
@@ -561,12 +564,17 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PERMISSIONS && grantResults.length != 0
+        ) {
+            startScanBeacon();
+        }
     }
 
     public void startScanBeacon() {
         mBBHandlerThread = new HandlerThread("HandlerThread");
         mBBHandlerThread.start();
         mBBHandler = new Handler(mBBHandlerThread.getLooper()) {
+            @SuppressLint("MissingPermission")
             @Override
             public void handleMessage(Message msg) {
                 switch (msg.what) {
@@ -599,6 +607,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
         mBBHandler.sendEmptyMessage(MSG_LE_START_SCAN);
     }
 
+    @SuppressLint("MissingPermission")
     private void checkBluetoothOn() {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
@@ -613,19 +622,42 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
     }
 
     private void ensurePermissions() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.CHANGE_WIFI_STATE) != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CHANGE_WIFI_STATE,
-                    Manifest.permission.ACCESS_WIFI_STATE,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.BLUETOOTH,
-                    Manifest.permission.BLUETOOTH_ADMIN,
-            }, 99);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.CHANGE_WIFI_STATE) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CHANGE_WIFI_STATE,
+                        Manifest.permission.ACCESS_WIFI_STATE,
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.BLUETOOTH,
+                        Manifest.permission.BLUETOOTH_ADMIN,
+                        Manifest.permission.BLUETOOTH_SCAN,
+                        Manifest.permission.BLUETOOTH_CONNECT
+                }, REQUEST_PERMISSIONS);
+            } else
+                startScanBeacon();
+        } else {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.CHANGE_WIFI_STATE) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CHANGE_WIFI_STATE,
+                        Manifest.permission.ACCESS_WIFI_STATE,
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.BLUETOOTH,
+                        Manifest.permission.BLUETOOTH_ADMIN
+                }, REQUEST_PERMISSIONS);
+            } else
+                startScanBeacon();
         }
     }
 
