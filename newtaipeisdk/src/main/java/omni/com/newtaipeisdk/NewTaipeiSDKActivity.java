@@ -277,7 +277,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
 
         checkLocationService();
         checkBluetoothOn();
-        startScanBeacon();
+//        startScanBeacon();
 
         mTimeoutHandlerThread = new HandlerThread("HandlerThread");
         mTimeoutHandlerThread.start();
@@ -322,7 +322,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
                     }
                 }
                 if (bluetoothAdapter.isEnabled() && !checkBluetooth) {
-                    startScanBeacon();
+//                    startScanBeacon();
                     checkBluetooth = true;
                     openBluetoothHint = false;
                 }

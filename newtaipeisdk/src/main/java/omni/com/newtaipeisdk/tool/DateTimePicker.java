@@ -20,7 +20,8 @@ public class DateTimePicker extends FrameLayout {
     public DateTimePicker(Context context) {
         super(context);
         mDate = Calendar.getInstance();
-        mYear = mDate.get(Calendar.YEAR) - 1911;
+//        mYear = mDate.get(Calendar.YEAR) - 1911;
+        mYear = mDate.get(Calendar.YEAR);
         mMouth = mDate.get(Calendar.MONTH) + 1;
         mDay = mDate.get(Calendar.DAY_OF_MONTH);
         inflate(context, R.layout.custom_time_picker, this);
@@ -28,7 +29,7 @@ public class DateTimePicker extends FrameLayout {
         mYearSpinner = this.findViewById(R.id.np_year);
         mYearSpinner.setMinValue(1);
         mYearSpinner.setMaxValue(200);
-        mYearSpinner.setValue(mYear);
+        mYearSpinner.setValue(mYear - 1911);
         mYearSpinner.setOnValueChangedListener(mOnYearChangedListener);
 
         mMonthSpinner = this.findViewById(R.id.np_month);
