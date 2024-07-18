@@ -22,6 +22,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -277,7 +278,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         checkLocationService();
-        checkBluetoothOn();
+//        checkBluetoothOn();
 //        startScanBeacon();
 
         mTimeoutHandlerThread = new HandlerThread("HandlerThread");
@@ -566,6 +567,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_PERMISSIONS && grantResults.length != 0
         ) {
+            checkBluetoothOn();
             startScanBeacon();
         }
     }
@@ -611,7 +613,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
     private void checkBluetoothOn() {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
-
+            Toast.makeText(this, "Device doesn't support Bluetooth", Toast.LENGTH_SHORT).show();
         } else {
             if (!bluetoothAdapter.isEnabled()) {
                 Intent enableBluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);

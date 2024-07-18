@@ -103,6 +103,8 @@ public class NewTaipeiSDKApi {
                           NetworkManager.NetworkManagerListener<RecordData[]> listener) {
 
         DialogTools.getInstance().showProgress(activity);
+        Log.e("LOG","st_date "+st_date);
+        Log.e("LOG","ed_date "+ed_date);
 
         long currentTimestamp = System.currentTimeMillis() / 1000L;
         String mac = NetworkManager.getInstance().getMacStr(currentTimestamp);
