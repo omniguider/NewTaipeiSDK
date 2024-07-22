@@ -642,8 +642,10 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
                         Manifest.permission.BLUETOOTH_SCAN,
                         Manifest.permission.BLUETOOTH_CONNECT
                 }, REQUEST_PERMISSIONS);
-            } else
+            } else {
+                checkBluetoothOn();
                 startScanBeacon();
+            }
         } else {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                     ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
@@ -658,8 +660,10 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
                         Manifest.permission.BLUETOOTH,
                         Manifest.permission.BLUETOOTH_ADMIN
                 }, REQUEST_PERMISSIONS);
-            } else
+            } else {
+                checkBluetoothOn();
                 startScanBeacon();
+            }
         }
     }
 
