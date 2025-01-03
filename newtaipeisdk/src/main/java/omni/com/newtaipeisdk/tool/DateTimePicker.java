@@ -48,7 +48,7 @@ public class DateTimePicker extends FrameLayout {
     private NumberPicker.OnValueChangeListener mOnYearChangedListener = new OnValueChangeListener() {
         @Override
         public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-            mYear = mYearSpinner.getValue();
+            mYear = mYearSpinner.getValue() + 1911;
             onDateTimeChanged();
         }
     };
