@@ -226,7 +226,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
         isClockBeacon = false;
         if (mBeaconInfoData != null) {
             for (BeaconInfoData beaconInfoData : mBeaconInfoData) {
-                if (beaconInfoData.getHWID().equals(realUid) && beaconInfoData.getClockEnabled().equals("Y")) {
+                if (isClockBeaconMatch(beaconInfoData, realUid)) {
                     isClockBeacon = true;
                     randomLevel = beaconInfoData.getUPDTE_RATE();
                     BEACON_ID_LIST.add(realUid);
@@ -704,6 +704,70 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
         return null;
     }
 
+    private boolean tryEnableClockBeacon(String targetHwid) {
+        BeaconInfoData clockBeaconInfo = findClockBeaconInfo(targetHwid);
+        if (clockBeaconInfo == null || bluetoothAdapter == null || !bluetoothAdapter.isEnabled() || !userPermission) {
+            return false;
+        }
+
+        isClockBeacon = true;
+        randomLevel = clockBeaconInfo.getUPDTE_RATE();
+        addBeaconInfoIfNeeded(clockBeaconInfo);
+        outside_range_TV.setVisibility(View.GONE);
+        punch_time_service_TV.setBackgroundResource(R.mipmap.btn_bg_yellow_m);
+        punch_time_service_TV.setClickable(true);
+        lastScanTime = Calendar.getInstance().getTime().getTime();
+        return true;
+    }
+
+    @Nullable
+    private BeaconInfoData findClockBeaconInfo(String targetHwid) {
+        if (targetHwid == null || mBeaconInfoData == null) {
+            return null;
+        }
+
+        String normalizedTarget = normalizeBeaconId(targetHwid);
+        for (BeaconInfoData beaconInfoData : mBeaconInfoData) {
+            if (isClockBeaconMatch(beaconInfoData, normalizedTarget)) {
+                return beaconInfoData;
+            }
+        }
+        return null;
+    }
+
+    private boolean isClockBeaconMatch(BeaconInfoData beaconInfoData, String targetHwid) {
+        if (beaconInfoData == null || targetHwid == null) {
+            return false;
+        }
+        return normalizeBeaconId(beaconInfoData.getHWID()).equalsIgnoreCase(normalizeBeaconId(targetHwid))
+                && "Y".equalsIgnoreCase(trimToEmpty(beaconInfoData.getClockEnabled()));
+    }
+
+    private String normalizeBeaconId(String value) {
+        return trimToEmpty(value).replace(":", "").replace("-", "");
+    }
+
+    private String trimToEmpty(String value) {
+        return value == null ? "" : value.trim();
+    }
+
+    private void addBeaconInfoIfNeeded(BeaconInfoData beaconInfoData) {
+        if (beaconInfoData == null || BEACON_LIST.contains(beaconInfoData)) {
+            return;
+        }
+
+        boolean duplicate = false;
+        for (BeaconInfoData data : BEACON_LIST) {
+            if (trimToEmpty(data.getDESC()).equals(trimToEmpty(beaconInfoData.getDESC()))) {
+                duplicate = true;
+                break;
+            }
+        }
+        if (!duplicate) {
+            BEACON_LIST.add(beaconInfoData);
+        }
+    }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -807,7 +871,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
             isClockBeacon = false;
             if (mBeaconInfoData != null) {
                 for (BeaconInfoData beaconInfoData : mBeaconInfoData) {
-                    if (beaconInfoData.getHWID().equals(omniguiderData.hwID) && beaconInfoData.getClockEnabled().equals("Y")) {
+                    if (isClockBeaconMatch(beaconInfoData, omniguiderData.hwID)) {
                         isClockBeacon = true;
                         randomLevel = beaconInfoData.getUPDTE_RATE();
                         boolean duplicate = false;
@@ -942,6 +1006,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
                 }
 
                 if (serviceData == null) {
+                    tryEnableClockBeacon(targetHwid);
                     return;
                 }
 
@@ -950,6 +1015,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
                     String msg = "parseLineSecureServiceData null";
                     Log.w(TAG, msg);
                     appendLog("⚠️ " + msg);
+                    tryEnableClockBeacon(targetHwid);
                     return;
                 }
 
@@ -973,6 +1039,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
                     appendLog(msg);
                     appendLog("VendorKey: " + lineVendorKeyHex);
                     appendLog("LotKey:    " + lineLotKeyHex);
+                    tryEnableClockBeacon(targetHwid);
                     return;
                 }
 
@@ -985,7 +1052,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
                     targetHwid = hwid;
 
                     for (BeaconInfoData beaconInfoData : mBeaconInfoData) {
-                        if (beaconInfoData.getHWID().equals(targetHwid) && beaconInfoData.getClockEnabled().equals("Y")) {
+                        if (isClockBeaconMatch(beaconInfoData, targetHwid)) {
                             isClockBeacon = true;
                             randomLevel = beaconInfoData.getUPDTE_RATE();
                             appendLog("✅ isClockBeacon matched: " + targetHwid);
@@ -1067,7 +1134,7 @@ public class NewTaipeiSDKActivity extends BaseBleActivity implements BeaconConsu
                 isClockBeacon = false;
                 for (BeaconInfoData beaconInfoData : mBeaconInfoData) {
                     // 使用 equalsIgnoreCase 避免大小寫差異導致比對失敗
-                    if (beaconInfoData.getHWID().equalsIgnoreCase(targetHwid) && beaconInfoData.getClockEnabled().equals("Y")) {
+                    if (isClockBeaconMatch(beaconInfoData, targetHwid)) {
                         isClockBeacon = true;
                         randomLevel = beaconInfoData.getUPDTE_RATE();
                         boolean duplicate = false;
