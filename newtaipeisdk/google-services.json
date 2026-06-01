@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "267502392776",
+    "project_id": "ntpc-beacon",
+    "storage_bucket": "ntpc-beacon.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:267502392776:android:8989725753f5bdb59e9cfd",
+        "android_client_info": {
+          "package_name": "omni.com.newtaipeisdk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVsT_vF9R-pSxqwCvO-ldAbwkaZ_bXF3w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:267502392776:android:445f4f5df8dc073d9e9cfd",
+        "android_client_info": {
+          "package_name": "tw.gov.ntpc.IMC.BeaconClockIn"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVsT_vF9R-pSxqwCvO-ldAbwkaZ_bXF3w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

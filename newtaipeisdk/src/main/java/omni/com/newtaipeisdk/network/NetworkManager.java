@@ -29,11 +29,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class NetworkManager {
 
     public static final String DOMAIN_NAME = "https://bp.ntpc.gov.tw/";
-    //    public static final String DOMAIN_NAME = "http://bp-test.ntpc.gov.tw/";
-//    public static final String DOMAIN_NAME = "https://bp.omniguider.com/";
+    public static final String DOMAIN_NAME_APP = "https://bpapp.ntpc.gov.tw/";
+    //    public static final String DOMAIN_NAME = "https://bp.omniguider.com/";
     public static final String API_RESULT_TRUE = "true";
     private static NetworkManager mNetworkManager;
     private Retrofit mRetrofit;
+    private Retrofit mRetrofitApp;
     private Gson mGson;
     public static final int TIME_OUT = 120;
 
@@ -66,6 +67,24 @@ public class NetworkManager {
                     .build();
         }
         return mRetrofit;
+    }
+
+    public Retrofit getRetrofitApp() {
+        if (mRetrofitApp == null) {
+            final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                    .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
+                    .writeTimeout(TIME_OUT, TimeUnit.SECONDS)
+                    .readTimeout(TIME_OUT, TimeUnit.SECONDS)
+                    .build();
+
+            mRetrofitApp = new Retrofit.Builder()
+                    .client(okHttpClient)
+                    .baseUrl(DOMAIN_NAME_APP)
+                    .callbackExecutor(Executors.newSingleThreadExecutor())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        return mRetrofitApp;
     }
 
     public Gson getGson() {

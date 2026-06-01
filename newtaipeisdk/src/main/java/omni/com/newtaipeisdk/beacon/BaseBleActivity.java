@@ -93,7 +93,7 @@ public abstract class BaseBleActivity extends AppCompatActivity implements Beaco
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
-        checkBTState();
+//        checkBTState();
     }
 
     @Override
@@ -313,8 +313,8 @@ public abstract class BaseBleActivity extends AppCompatActivity implements Beaco
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_ENABLE_BT) {
-            if (resultCode == RESULT_OK)
-                checkBTState(); //re-check
+//            if (resultCode == RESULT_OK)
+//                checkBTState(); //re-check
 
         } else {
             //finish();//shall use dialog view
@@ -338,10 +338,7 @@ public abstract class BaseBleActivity extends AppCompatActivity implements Beaco
                 // Should we show an explanation?
                 if (ActivityCompat.shouldShowRequestPermissionRationale(BaseBleActivity.this,
                         android.Manifest.permission.BLUETOOTH)
-
-
                 ) {
-
                     // Show an expanation to the user *asynchronously* -- don't block
                     // this thread waiting for the user's response! After the user
                     // sees the explanation, try again to request the permission.
@@ -381,13 +378,8 @@ public abstract class BaseBleActivity extends AppCompatActivity implements Beaco
                 }
                 return;
             }
-
         }
-
-
         startBT();
-
-
     }
 
     @SuppressLint("MissingPermission")

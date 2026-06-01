@@ -27,8 +27,8 @@ public class DateTimePicker extends FrameLayout {
         inflate(context, R.layout.custom_time_picker, this);
 
         mYearSpinner = this.findViewById(R.id.np_year);
-        mYearSpinner.setMinValue(1);
-        mYearSpinner.setMaxValue(200);
+        mYearSpinner.setMinValue(101);
+        mYearSpinner.setMaxValue(130);
         mYearSpinner.setValue(mYear - 1911);
         mYearSpinner.setOnValueChangedListener(mOnYearChangedListener);
 

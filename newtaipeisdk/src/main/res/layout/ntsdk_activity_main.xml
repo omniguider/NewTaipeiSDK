@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ntsdk_activity_main_fl"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/layout_main_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/gray_f3"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="visible">
 
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
@@ -30,6 +33,38 @@
 
             </FrameLayout>
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/_16sdp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="@dimen/_14sdp"
+                    android:layout_height="@dimen/_14sdp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_human" />
+
+                <TextView
+                    android:id="@+id/userName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/_4sdp"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/_14sdp" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/menu"
+                android:layout_width="@dimen/_24sdp"
+                android:layout_height="@dimen/_24sdp"
+                android:layout_gravity="center_vertical|end"
+                android:layout_marginEnd="@dimen/_16sdp"
+                android:src="@drawable/ic_menu"
+                android:visibility="gone" />
+
             <TextView
                 android:id="@+id/ntsdk_activity_main_tv_action_bar_title"
                 android:layout_width="wrap_content"
@@ -38,34 +73,75 @@
                 android:text="@string/punch_time_service"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/text_size_action_bar"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="visible" />
 
         </androidx.appcompat.widget.Toolbar>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_130sdp"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/fragment_home_vp_pic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/fragment_home_tl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                app:tabBackground="@drawable/tab_selector"
+                app:tabGravity="center"
+                app:tabIndicatorHeight="0dp" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/timeTextView"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_48sdp"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/blue_e9"
+            android:gravity="center"
+            android:letterSpacing="0.1"
+            android:textColor="@color/ntsdk_blue"
+            android:textSize="@dimen/_16sdp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/ntsdk_activity_main_tv_punch_time_service"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_52sdp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="40dp"
+            android:layout_marginStart="@dimen/_36sdp"
+            android:layout_marginTop="@dimen/_36sdp"
+            android:layout_marginEnd="@dimen/_36sdp"
             android:background="@mipmap/btn_bg_gray_m"
             android:gravity="center"
+            android:letterSpacing="0.2"
             android:text="@string/punch_time_service"
             android:textColor="@android:color/white"
-            android:textSize="@dimen/text_size_action_bar"
+            android:textSize="@dimen/_18sdp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/ntsdk_activity_main_tv_query_the_records"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_52sdp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="40dp"
+            android:layout_marginStart="@dimen/_36sdp"
+            android:layout_marginTop="@dimen/_18sdp"
+            android:layout_marginEnd="@dimen/_36sdp"
             android:background="@mipmap/btn_bg_green_m"
             android:gravity="center"
+            android:letterSpacing="0.2"
             android:text="@string/query_the_records"
             android:textColor="@android:color/white"
-            android:textSize="@dimen/text_size_action_bar"
+            android:textSize="@dimen/_18sdp"
             android:textStyle="bold" />
 
     </LinearLayout>
@@ -86,26 +162,29 @@
         android:layout_gravity="center|bottom"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="96dp"
+        android:layout_marginBottom="@dimen/_42sdp"
         android:background="@drawable/solid_round_rectangle_white"
         android:gravity="center"
+        android:letterSpacing="0.1"
         android:padding="16dp"
         android:text="@string/hint_personal"
         android:textColor="@android:color/black"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textSize="@dimen/_13sdp"
+        android:textStyle="bold"
+        android:visibility="visible" />
 
     <TextView
         android:id="@+id/ntsdk_activity_main_tv_outside_range"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center|bottom"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="@dimen/_12sdp"
         android:gravity="center"
         android:text="@string/error_dialog_message_text_outside_range"
         android:textColor="@android:color/holo_red_light"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/ntsdk_activity_main_tv_message"
@@ -117,6 +196,159 @@
         android:gravity="start"
         android:textColor="@android:color/black"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:visibility="visible" />
+
+    <View
+        android:id="@+id/view_key_setup_trigger"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_gravity="start|bottom"
+        android:clickable="true"
+        android:elevation="8dp"
+        android:focusable="true" />
+
+    <!-- Key 設定面板 -->
+    <FrameLayout
+        android:id="@+id/layout_key_setup"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#F5F5F5"
+        android:elevation="16dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="32dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                android:text="LINE Beacon Key 設定"
+                android:textColor="#333333"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="Vendor Key (8碼 Hex)"
+                android:textColor="#666666"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/et_vendor_key"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:background="@android:color/white"
+                android:hint="例如: 24968156"
+                android:inputType="textNoSuggestions"
+                android:padding="12dp"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="Lot Key (16碼 Hex)"
+                android:textColor="#666666"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/et_lot_key"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="40dp"
+                android:background="@android:color/white"
+                android:hint="例如: 0255691686013904"
+                android:inputType="textNoSuggestions"
+                android:padding="12dp"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/btn_confirm_key"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/ntsdk_blue"
+                android:padding="14dp"
+                android:text="確認，開始掃描"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_key_setup_close"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:contentDescription="close"
+            android:padding="2dp"
+            android:src="@drawable/ic_close" />
+
+    </FrameLayout>
+
+    <!-- Log 顯示面板，疊在最上層 -->
+    <LinearLayout
+        android:id="@+id/layout_log_panel"
+        android:layout_width="match_parent"
+        android:layout_height="360dp"
+        android:layout_gravity="bottom"
+        android:background="#CC000000"
+        android:elevation="24dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="4dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="LOG"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_log_clear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="清除"
+                android:textColor="#FF9900"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <ScrollView
+            android:id="@+id/sv_log"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_log"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:padding="8dp"
+                android:textColor="#00FF00"
+                android:textSize="11sp" />
+
+        </ScrollView>
+
+    </LinearLayout>
 
 </FrameLayout>

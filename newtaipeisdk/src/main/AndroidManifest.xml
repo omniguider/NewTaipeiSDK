@@ -9,8 +9,8 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 
     <uses-feature
         android:name="android.hardware.wifi"
@@ -23,16 +23,31 @@
         android:supportsRtl="true">
 
         <activity
-            android:name=".NewTaipeiSDKActivity"
-            android:exported="true"
-            android:launchMode="singleTop"
+            android:name=".LoginActivity"
             android:screenOrientation="portrait"
+            android:exported="true"
             android:theme="@style/NTSDKTheme">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".NewTaipeiSDKActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/NTSDKTheme">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".WebViewActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

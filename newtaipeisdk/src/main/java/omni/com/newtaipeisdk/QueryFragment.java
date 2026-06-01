@@ -1,5 +1,7 @@
 package omni.com.newtaipeisdk;
 
+import static omni.com.newtaipeisdk.NewTaipeiSDKActivity.LOG_TAG;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Build;
@@ -156,6 +158,8 @@ public class QueryFragment extends Fragment {
                                     }
                                 });
                     } else {
+                        Log.e(LOG_TAG,"getRecord start_time_ad"+start_time_ad);
+                        Log.e(LOG_TAG,"getRecord end_time_ad"+end_time_ad);
                         NewTaipeiSDKApi.getInstance().getRecord(getActivity(), NewTaipeiSDKActivity.userid,
                                 start_time_ad, end_time_ad,
                                 new NetworkManager.NetworkManagerListener<RecordData[]>() {
@@ -172,6 +176,7 @@ public class QueryFragment extends Fragment {
                                         if (errorMsg.equals("Forbidden")) {
                                             DialogTools.getInstance().showErrorMessage(getActivity(), R.string.error, getString(R.string.error_dialog_message_text_outside_domain));
                                         }
+                                        Log.e(LOG_TAG,"getRecord errorMsg"+errorMsg);
 //                                        DialogTools.getInstance().showErrorMessage(getActivity(), R.string.error,
 //                                                R.string.hint_input_correct_date, new DialogInterface.OnDismissListener() {
 //                                                    @Override
