@@ -3,7 +3,7 @@
     <string name="user_name">員工姓名</string>
     <string name="user_id">員工帳號</string>
     <string name="login_page_type_account">請輸入帳號</string>
-    <string name="login_account">帳號密碼登入</string>
+    <string name="login_account_sdk">帳號密碼登入</string>
     <string name="login">登入</string>
     <string name="forget_password">忘記密碼</string>
     <string name="fingerprint">生物辨識登入</string>

@@ -104,7 +104,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:letterSpacing="0.2"
-                android:text="@string/login_account"
+                android:text="@string/login_account_sdk"
                 android:textColor="@color/blue_20"
                 android:textSize="@dimen/_14sdp"
                 android:textStyle="bold" />
